@@ -27,8 +27,18 @@ int main() {
     float vertices[36];
     getIcosahedronVertices(1.0f, vertices);
 
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 12 * 3; i++)
         std::cout << vertices[i] << ", ";
+
+    std::vector<std::vector<int>> neighbors = getNeighborVertices(vertices);
+
+    for (int i = 0; i < 12; i++) {
+        std::cout << i << " -> ";
+        for (int j = 0; j < neighbors[i].size(); j++)
+            std::cout << neighbors[i][j] << ", ";
+        std::cout << std::endl;
+    }
+
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -69,6 +79,7 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     shader.use();
+
 
     while (!glfwWindowShouldClose(window)) {
 
