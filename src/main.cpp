@@ -2,43 +2,22 @@
 // Created by hhabib on 07/07/2026.
 //
 
-#include "../include/PlanetGenerator.h"
-#include <iostream>
-
+#include <glad.h>
 #include <GLFW/glfw3.h>
 
-unsigned int indices[] = {
-    0, 2, 1,
-    0, 1, 5,
-    0, 5, 4,
-    0, 4, 3,
-    0, 3, 2,
+#include <iostream>
+#include <../include/shader.h>
+#include "../include/icosahedronGenerator.h"
 
-    11, 7, 6,
-    11, 6, 10,
-    11, 10, 9,
-    11, 9, 8,
-    11, 8, 7,
 
-   };
 
 
 int main() {
-    float vertices[36];
-    getIcosahedronVertices(1.0f, vertices);
 
-    for (int i = 0; i < 12 * 3; i++)
-        std::cout << vertices[i] << ", ";
-
-    std::vector<std::vector<int>> neighbors = getNeighborVertices(vertices);
-
-    for (int i = 0; i < 12; i++) {
-        std::cout << i << " -> ";
-        for (int j = 0; j < neighbors[i].size(); j++)
-            std::cout << neighbors[i][j] << ", ";
-        std::cout << std::endl;
-    }
-
+    float vertices[12 * 3];
+    int indices[20 * 3];
+  writeToFile();
+  genIcosahedron(1, indices, vertices);
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
