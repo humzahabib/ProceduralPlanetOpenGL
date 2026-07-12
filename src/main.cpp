@@ -2,15 +2,13 @@
 // Created by hhabib on 07/07/2026.
 //
 
-#include <glad.h>
+#include <../include/shader.h>
 #include <GLFW/glfw3.h>
+#include <glad.h>
 
 #include <iostream>
-#include <../include/shader.h>
+
 #include "../include/icosahedronGenerator.h"
-
-
-
 
 int main() {
 
@@ -59,6 +57,8 @@ int main() {
 
     shader.use();
 
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     while (!glfwWindowShouldClose(window)) {
 

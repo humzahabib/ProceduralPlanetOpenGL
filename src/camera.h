@@ -1,0 +1,10 @@
+//
+// Created by hhabib on 12/07/2026.
+//
+
+#ifndef PROCEDURALPLANETOPENGL_CAMERA_H
+#define PROCEDURALPLANETOPENGL_CAMERA_H
+
+class camera {};
+
+#endif  // PROCEDURALPLANETOPENGL_CAMERA_H
