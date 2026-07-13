@@ -9,11 +9,13 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw = YAW, float pitch = 
   this -> position = position;
   this -> worldUp = up;
   this -> pitch = pitch;
+  this -> yaw = yaw;
   this -> UpdateCameraVectors();
 }
 
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY,
-               float upZ, float yaw, float pitch) {
+Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
+  : front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), zoom(ZOOM)
+{
   position = glm::vec3(posX, posY, posZ);
   worldUp = glm::vec3(upX, upY, upZ);
   this -> yaw = yaw;
@@ -60,11 +62,12 @@ void Camera::ProcessMouseScroll(float yoffset) {
 
 void Camera::UpdateCameraVectors() {
   glm::vec3 frontVec;
-  frontVec.x = cos(glm::radians(yaw) * cos(glm::radians(pitch)));
+  frontVec.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
   frontVec.y = sin(glm::radians(pitch));
   frontVec.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
   frontVec = glm::normalize(frontVec);
 
+  front = glm::normalize(frontVec);
   right = glm::normalize(glm::cross(frontVec, worldUp));
   up = glm::normalize(glm::cross(right, front));
 }
