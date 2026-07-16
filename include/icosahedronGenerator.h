@@ -5,49 +5,15 @@
 #ifndef PROCEDURALPLANETOPENGL_PLANETGENERATOR_H
 #define PROCEDURALPLANETOPENGL_PLANETGENERATOR_H
 
-#include <cmath>
-#include <vector>
-#include <set>
+#include <./helpers.h>
+
 #include <algorithm>
-#include <iostream>
-#include <fstream>
 #include <array>
-
-
-
-struct Vector3
-{
-  float x, y, z;
-
-  float magnitude()
-  {return sqrt(x*x + y*y + z*z);}
-};
-Vector3 cross(Vector3 a, Vector3 b);
-
-
-struct Triangle {
-  Vector3 a, b, c;
-
-  Vector3 normal()
-  {
-    Vector3 u = Vector3(b.x - a.x, b.y - a.y, b.z - a.z);
-    Vector3 v = Vector3(c.x - a.x, c.y - a.y, c.z - a.z);
-    return cross(u, v);
-  }
-
-  Vector3 center()
-  {
-    return Vector3(
-            a.x + b.x + c.x / 3,
-            a.y + b.y + c.y / 3,
-            a.z + b.z + c.z / 3
-            );
-  }
-};
-
-
-
-
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <set>
+#include <vector>
 
 float dot(Vector3 a, Vector3 b);
 Vector3 cross(Vector3 a, Vector3 b);
