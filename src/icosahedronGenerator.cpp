@@ -2,13 +2,14 @@
 // Created by hhabib on 16/07/2026.
 //
 #include "../include/icosahedronGenerator.h"
+#include "./../include/Mesh.h"
 #include <iostream>
 #include <fstream>
 #include <array>
 #include <tuple>
 
-void getIcosahedronVertices(float size, std::vector<Vector3>& vertices) {
-    float gr = (1 + std::sqrt(5)) / 2;
+void getIcosahedronVertices(float size, std::vector<glm::vec3>& vertices) {
+    float gr = (1.0f + std::sqrt(5.0f)) / 2.0f;
     float a = std::sqrt((size * size) / (1 + gr * gr));
     float sideA = size * a;
     float sideB = sideA * gr;
@@ -25,7 +26,7 @@ void getIcosahedronVertices(float size, std::vector<Vector3>& vertices) {
     };
 }
 
-std::vector<std::vector<int>> getNeighborVertices(const std::vector<Vector3>& vertices) {
+std::vector<std::vector<int>> getNeighborVertices(const std::vector<glm::vec3>& vertices) {
     float minEdgeLength = 9999.0f;
     std::vector<std::vector<int>> neighbors(12);
 
@@ -73,9 +74,9 @@ void genIcosahedron(float size, Mesh& mesh) {
     mesh.triangles.reserve(rawTriangles.size());
 
     for (const auto& [a, b, c] : rawTriangles) {
-        Triangle tri{a, b, c};
+        Triangle tri(a, b, c);
         if (dot(tri.center(mesh.vertices), tri.normal(mesh.vertices)) < 0)
-            tri = Triangle{a, c, b};   // flip winding to face outward
+            tri = Triangle(a, c, b);   // flip winding to face outward
         mesh.triangles.push_back(tri);
     }
 
@@ -87,7 +88,7 @@ int writeToFile(const Mesh& mesh) {
         std::cout << "ERROR: Couldn't open the vertices file for writing" << std::endl;
         return 1;
     }
-    for (const Vector3& v : mesh.vertices)
+    for (const glm::vec3& v : mesh.vertices)
         verticesFile << v.x << ", " << v.y << ", " << v.z << std::endl;
     verticesFile.close();
 

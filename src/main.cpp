@@ -27,11 +27,11 @@ Camera cam = Camera(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 1.0f, 0.0f), 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 int main() {
 
-    float vertices[12 * 3];
-    int indices[20 * 3];
-  writeToFile();
-  genIcosahedron(1, indices, vertices);
-
+  Mesh mesh;
+  genIcosahedron(1, mesh);
+  mesh.loopSubdivide(2);
+  std::cout << "Vertices: " << mesh.vertices.size() << '\n';
+  std::cout << "Triangles: " << mesh.triangles.size() << '\n';
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -60,8 +60,8 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(glm::vec3), mesh.vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.triangles.size() * sizeof(Triangle), mesh.triangles.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
@@ -120,8 +120,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         glBindVertexArray(VAO);
 
-        glDrawElements(GL_TRIANGLES,     sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.triangles.size() * 3), GL_UNSIGNED_INT, nullptr);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

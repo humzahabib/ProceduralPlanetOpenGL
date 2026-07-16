@@ -7,25 +7,16 @@
 
 #include <./helpers.h>
 
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <fstream>
-#include <iostream>
 #include <set>
 #include <vector>
 
-float dot(Vector3 a, Vector3 b);
-Vector3 cross(Vector3 a, Vector3 b);
+#include "Mesh.h"
 
-
-void getIcosahedronVertices(float size, Vector3 *vertices);
-std::vector<std::vector<int>> getNeighborVertices(Vector3 *vertices);
+void getIcosahedronVertices(float size, glm::vec3 *vertices);
+std::vector<std::vector<int>> getNeighborVertices(glm::vec3 *vertices);
 std::set<std::tuple<int, int, int>>  getTriangles(std::vector<std::vector<int>> neighbors);
-void getAlignedTriangles(Vector3 *vertices, std::set<std::tuple<int, int, int>> &triangles);
-void genIcosahedron(float size, int *indicesArray, float *vertices);
+void getAlignedTriangles(glm::vec3 *vertices, std::set<std::tuple<int, int, int>> &triangles);
+void genIcosahedron(float size, Mesh& mesh);
 int writeToFile();
-
-float distance(Vector3 a, Vector3 b);
 
 #endif //PROCEDURALPLANETOPENGL_PLANETGENERATOR_H
