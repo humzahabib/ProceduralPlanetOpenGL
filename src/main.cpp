@@ -13,6 +13,7 @@
 #include "../include/icosahedronGenerator.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "./../include/SphereDeformer.h"
 
 float lastFrame = 0.0f;
 float currentFrame = 0.0f;
@@ -29,7 +30,9 @@ int main() {
 
   Mesh mesh;
   genIcosahedron(1, mesh);
-  mesh.loopSubdivide(2);
+  mesh.loopSubdivide(3);
+  ApplyPerlineNoiseOnIcosphere(&mesh, 2, 1, 1);
+
   std::cout << "Vertices: " << mesh.vertices.size() << '\n';
   std::cout << "Triangles: " << mesh.triangles.size() << '\n';
     glfwInit();
@@ -74,7 +77,7 @@ int main() {
 
 
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwSetCursorPosCallback(window, mouse_callback);

@@ -2,11 +2,13 @@
 // Created by hhabib on 16/07/2026.
 //
 #include "../include/icosahedronGenerator.h"
-#include "./../include/Mesh.h"
-#include <iostream>
-#include <fstream>
+
 #include <array>
+#include <fstream>
+#include <iostream>
 #include <tuple>
+
+#include "./../include/Mesh.h"
 
 void getIcosahedronVertices(float size, std::vector<glm::vec3>& vertices) {
     float gr = (1.0f + std::sqrt(5.0f)) / 2.0f;
