@@ -23,13 +23,15 @@ inline float distance(glm::vec3 a, glm::vec3 b) {
 }
 
 
+
+
 struct Triangle {
     uint32_t a, b, c;
 
     [[nodiscard]] glm::vec3 normal(const std::vector<glm::vec3>& verts) const {
         glm::vec3 u = verts[b] - verts[a];
         glm::vec3 v = verts[c] - verts[a];
-        return cross(u, v);
+        return glm::normalize(cross(u, v));
     }
 
     [[nodiscard]] glm::vec3 center(const std::vector<glm::vec3>& verts) const {

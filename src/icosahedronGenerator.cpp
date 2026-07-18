@@ -12,8 +12,8 @@
 
 void getIcosahedronVertices(float size, std::vector<glm::vec3>& vertices) {
     float gr = (1.0f + std::sqrt(5.0f)) / 2.0f;
-    float a = std::sqrt((size * size) / (1 + gr * gr));
-    float sideA = size * a;
+    float a = std::sqrt((1.0f* 1.0f) / (1 + gr * gr));
+    float sideA = a;
     float sideB = sideA * gr;
 
     vertices = {
@@ -68,6 +68,15 @@ std::set<std::tuple<int, int, int>> getTriangleIndices(const std::vector<std::ve
 
 void genIcosahedron(float size, Mesh& mesh) {
     getIcosahedronVertices(size, mesh.vertices);
+
+
+  std::vector<glm::vec3> newVertices;
+
+  for (int i = 0; i < mesh.vertices.size(); i++)
+    newVertices.push_back(mesh.vertices[i] * size);
+
+  mesh.vertices = newVertices;
+
 
     std::vector<std::vector<int>> neighbors = getNeighborVertices(mesh.vertices);
     std::set<std::tuple<int, int, int>> rawTriangles = getTriangleIndices(neighbors);

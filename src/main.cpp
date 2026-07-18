@@ -15,23 +15,37 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "./../include/SphereDeformer.h"
 
+
+
+glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
+glm::vec3 sunPos = glm::vec3(-2.0f, 10.0f, 4.0f);
+float ambientStrength = 0.1f;
+glm::vec3 surfaceColor = glm::vec3(50.0f / 225.0f, 205.0f / 225.0f, 50.0f / 225.0f);
+
+
+#pragma region Camera Movement Stuff
+
 float lastFrame = 0.0f;
 float currentFrame = 0.0f;
 float deltaTime;
 
-
-
 int lastX = 400, lastY = 300;
 bool firstMouse = true;
 
-Camera cam = Camera(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f);;
+Camera cam = Camera(glm::vec3(0.0f, 0.0f, -20.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f);;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+
+#pragma endregion
+
+
 int main() {
 
   Mesh mesh;
-  genIcosahedron(1, mesh);
+  genIcosahedron(7, mesh);
+
+  //writeToFile(mesh);
   mesh.loopSubdivide(3);
-  ApplyPerlineNoiseOnIcosphere(&mesh, 2, 1, 1);
+  ApplyPerlinNoiseOnIcosphere(&mesh, 1.05f, 2, 1);
 
   std::cout << "Vertices: " << mesh.vertices.size() << '\n';
   std::cout << "Triangles: " << mesh.triangles.size() << '\n';
@@ -50,17 +64,17 @@ int main() {
     }
 
 
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, 800 * 2, 600 * 2);
 
 
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBOs[2], VAO, EBO;
 
-    glGenBuffers(1, &VBO);
+    glGenBuffers(2, VBOs);
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
     glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(glm::vec3), mesh.vertices.data(), GL_STATIC_DRAW);
@@ -69,24 +83,30 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+    glBufferData(GL_ARRAY_BUFFER, mesh.normals.size() * sizeof(glm::vec3), mesh.normals.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(1);
+
+
     Shader shader = Shader("../shaders/vertexShader.glsl", "../shaders/fragShader.glsl");
 
     glEnable(GL_DEPTH_TEST);
 
     shader.use();
 
-
-
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwSetCursorPosCallback(window, mouse_callback);
 
+  shader.setVec3("sunLight", sunLight);
+  shader.setVec3("surfaceColor", surfaceColor);
+  shader.setFloat("ambientStrength", ambientStrength);
+  shader.setVec3("lightPos", sunPos);
 
-    glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
-    int matLoc;
+  glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
 
 
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window)) {
         currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -104,23 +124,18 @@ int main() {
 
 
       projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-      matLoc = glGetUniformLocation(shader.ID, "projection");
-      glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(projection));
+      shader.setMat4("projection", projection);
 
-      matLoc = glGetUniformLocation(shader.ID, "view");
       view = cam.GetViewMatrix();
-      glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(view));
+      shader.setMat4("view", view);
 
-      matLoc = glGetUniformLocation(shader.ID, "model");
-      glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(model));
-
+      shader.setMat4("model", model);
 
 
         glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
 
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClear(GL_COLOR_BUFFER_BIT);
         glBindVertexArray(VAO);
 
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(mesh.triangles.size() * 3), GL_UNSIGNED_INT, nullptr);

@@ -17,6 +17,6 @@ std::vector<std::vector<int>> getNeighborVertices(glm::vec3 *vertices);
 std::set<std::tuple<int, int, int>>  getTriangles(std::vector<std::vector<int>> neighbors);
 void getAlignedTriangles(glm::vec3 *vertices, std::set<std::tuple<int, int, int>> &triangles);
 void genIcosahedron(float size, Mesh& mesh);
-int writeToFile();
+int writeToFile(Mesh &mesh);
 
 #endif //PROCEDURALPLANETOPENGL_PLANETGENERATOR_H

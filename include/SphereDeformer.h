@@ -13,6 +13,6 @@
 #include <glm/gtc/noise.hpp>
 
 
-void ApplyPerlineNoiseOnIcosphere(Mesh* icosphere, float height, float frequency, float randomness);
+void ApplyPerlinNoiseOnIcosphere(Mesh* icosphere, float height, float frequency, float randomness);
 
 #endif  // PROCEDURALPLANETOPENGL_SPHEREDEFORMER_H
