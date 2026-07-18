@@ -84,3 +84,12 @@ final_position = normalize(position) * (planet_radius + height * height_scale)
 Next up is calculating per-vertex colour procedurally based on height/slope/latitude so the planet
 actually looks like a planet instead of a grey rock, then moving into pixel shading and the
 atmospheric scattering stack.
+
+## References
+- Icosahedron: [Wikipedia — Icosahedron](https://en.wikipedia.org/wiki/Icosahedron)
+- Geodesic subdivision / icosphere: [Wikipedia — Geodesic polyhedron](https://en.wikipedia.org/wiki/Geodesic_polyhedron)
+- Slerp: [Wikipedia — Slerp](https://en.wikipedia.org/wiki/Slerp)
+- Perlin noise (original): Perlin, K. (1985). *An Image Synthesizer*. SIGGRAPH '85.
+- Perlin noise (improved, the version I'm using): Perlin, K. (2002). [*Improving Noise*](https://mrl.cs.nyu.edu/~perlin/paper445.pdf). ACM Transactions on Graphics 21(3), 681–682. Reference implementation: [mrl.cs.nyu.edu/~perlin/noise](https://mrl.cs.nyu.edu/~perlin/noise/)
+- Fractal Brownian motion (octave stacking for terrain): [Wikipedia — Fractional Brownian motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion)
+- Atmospheric scattering (for the upcoming atmosphere phases): Bruneton, E. and Neyret, F. (2008). [*Precomputed Atmospheric Scattering*](https://hal.inria.fr/inria-00288758/en). Computer Graphics Forum 27(4), 1079–1086. Updated 2017 implementation and writeup: [ebruneton.github.io/precomputed_atmospheric_scattering](https://ebruneton.github.io/precomputed_atmospheric_scattering/), code: [github.com/ebruneton/precomputed_atmospheric_scattering](https://github.com/ebruneton/precomputed_atmospheric_scattering)
