@@ -14,12 +14,12 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "./../include/SphereDeformer.h"
-
+#include "./../include/TerrainShader.h"
 
 
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
-glm::vec3 sunPos = glm::vec3(-2.0f, 10.0f, 4.0f);
-float ambientStrength = 0.1f;
+glm::vec3 sunPos = glm::vec3(-220.0f, 220.0f, 230.0f);
+float ambientStrength = 0.4f, specularStrength = 0.1f;
 glm::vec3 surfaceColor = glm::vec3(50.0f / 225.0f, 205.0f / 225.0f, 50.0f / 225.0f);
 
 
@@ -41,15 +41,20 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 int main() {
 
   Mesh mesh;
-  genIcosahedron(7, mesh);
+  genIcosahedron(200, mesh);
 
   //writeToFile(mesh);
-  mesh.loopSubdivide(3);
-  ApplyPerlinNoiseOnIcosphere(&mesh, 1.05f, 2, 1);
+  //mesh.loopSubdivide(6);
+  //ApplyPerlinNoiseOnIcosphere(&mesh, 8.0f, 1.0f/70.0f, 1);
+  //ApplyPerlinNoiseOnIcosphere(&mesh, 4.0f, 1.0f / 25.0f, 2);
+  //ApplyPerlinNoiseOnIcosphere(&mesh, 2.0f, 1.0 / 2.50f, 3);
+  std::vector<glm::vec3> colors = shade(mesh);
+
 
   std::cout << "Vertices: " << mesh.vertices.size() << '\n';
   std::cout << "Triangles: " << mesh.triangles.size() << '\n';
-    glfwInit();
+    glfwInit();  std::vector<glm::vec3> heightNorms = shade(mesh);
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -67,9 +72,9 @@ int main() {
     glViewport(0, 0, 800 * 2, 600 * 2);
 
 
-    unsigned int VBOs[2], VAO, EBO;
+    unsigned int VBOs[3], VAO, EBO;
 
-    glGenBuffers(2, VBOs);
+    glGenBuffers(3, VBOs);
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &EBO);
 
@@ -88,6 +93,10 @@ int main() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
 
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(glm::vec3), colors.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(2);
 
     Shader shader = Shader("../shaders/vertexShader.glsl", "../shaders/fragShader.glsl");
 
@@ -102,6 +111,7 @@ int main() {
   shader.setVec3("surfaceColor", surfaceColor);
   shader.setFloat("ambientStrength", ambientStrength);
   shader.setVec3("lightPos", sunPos);
+  shader.setFloat("specularStrength", specularStrength);
 
   glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
 
@@ -113,6 +123,8 @@ int main() {
         lastFrame = currentFrame;
 
 
+      shader.setVec3("viewPos", cam.position);
+
       if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
           cam.ProcessKeyboard(FORWARD, deltaTime);
       if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -123,7 +135,7 @@ int main() {
         cam.ProcessKeyboard(RIGHT, deltaTime);
 
 
-      projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+      projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 1000.0f);
       shader.setMat4("projection", projection);
 
       view = cam.GetViewMatrix();

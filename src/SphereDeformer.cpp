@@ -4,6 +4,8 @@
 
 #include "./../include/SphereDeformer.h"
 
+#include <iostream>
+
 void ApplyPerlinNoiseOnIcosphere(Mesh* icosphere, float height, float frequency,
                                   float randomness) {
 
@@ -11,6 +13,8 @@ void ApplyPerlinNoiseOnIcosphere(Mesh* icosphere, float height, float frequency,
 
   for (auto &vertex : icosphere->vertices) {
     float noise = glm::perlin((vertex + randomness) * frequency) * height;
+
+
     glm::vec3 vertexDir = glm::normalize(vertex);
 
     glm::vec3 heightAddition = vertexDir * noise;
