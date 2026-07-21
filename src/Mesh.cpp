@@ -11,9 +11,10 @@ Mesh::Mesh() {
   triangles = {};
 }
 
-Mesh::Mesh(std::vector<glm::vec3> vertices, std::vector<Triangle> triangles) {
-  this -> vertices = vertices;
-  this -> triangles = triangles;
+Mesh::Mesh(glm::vec3 position, std::vector<glm::vec3> vertices, std::vector<Triangle> triangles) {
+
+  for (const auto& vertex : vertices)
+    this -> vertices.push_back(vertex + position);
 }
 
 void Mesh::Subdivide() {
@@ -95,4 +96,29 @@ void Mesh::calculateNormals() {
     normals[i] = newNormal;
   }
 
+}
+
+void Mesh::setPosition(glm::vec3 _position) {
+  for (auto& vertex : vertices) {
+    vertex = vertex + _position;
+    position = _position;
+  }
+}
+
+int Mesh::writeToFile() {
+  std::ofstream verticesFile("../configs/vertices.txt");
+  if (!verticesFile) {
+    std::cout << "ERROR: Couldn't open the vertices file for writing" << std::endl;
+    return 1;
+  }
+  for (const glm::vec3& v : vertices)
+    verticesFile << v.x << ", " << v.y << ", " << v.z << std::endl;
+  verticesFile.close();
+
+  std::ofstream trianglesFile("../configs/triangles.txt");
+  for (const Triangle& t : triangles)
+    trianglesFile << t.a << ", " << t.b << ", " << t.c << std::endl;
+  trianglesFile.close();
+
+  return 0;
 }
