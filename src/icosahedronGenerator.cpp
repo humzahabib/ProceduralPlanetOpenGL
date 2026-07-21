@@ -39,7 +39,7 @@ std::vector<std::vector<int>> getNeighborVertices(const std::vector<glm::vec3>& 
 
     for (int i = 0; i < 12; i++)
         for (int j = 0; j < 12; j++)
-            if (i != j && std::fabs(distance(vertices[i], vertices[j]) - minEdgeLength) < 1e-3f)
+            if (i != j && std::fabs(distance(vertices[i], vertices[j]) - minEdgeLength) < 0.1f)
                 neighbors[i].push_back(j);
 
     return neighbors;

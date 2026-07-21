@@ -18,7 +18,7 @@
 
 
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
-glm::vec3 sunPos = glm::vec3(-220.0f, 220.0f, 230.0f);
+glm::vec3 sunPos = glm::vec3(-3200.0f, 3200.0f, 3200.0f);
 float ambientStrength = 0.4f, specularStrength = 0.1f;
 glm::vec3 surfaceColor = glm::vec3(50.0f / 225.0f, 205.0f / 225.0f, 50.0f / 225.0f);
 
@@ -41,13 +41,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 int main() {
 
   Mesh mesh;
-  genIcosahedron(200, mesh);
+  genIcosahedron(5000, mesh);
 
   //writeToFile(mesh);
-  //mesh.loopSubdivide(6);
-  //ApplyPerlinNoiseOnIcosphere(&mesh, 8.0f, 1.0f/70.0f, 1);
-  //ApplyPerlinNoiseOnIcosphere(&mesh, 4.0f, 1.0f / 25.0f, 2);
-  //ApplyPerlinNoiseOnIcosphere(&mesh, 2.0f, 1.0 / 2.50f, 3);
+  mesh.loopSubdivide(8);
+  //ApplyPerlinNoiseOnIcosphere(&mesh, 800.0f, 1.0f/(900 * 1.60f), 0, true);
+  //ApplyPerlinNoiseOnIcosphere(&mesh, 400.0f, 1.0f / (5000.0f * 1.60f), 2, false);
+  //ApplyPerlinNoiseOnIcosphere(&mesh, 0.50f, 1.0 / 25.0f, 3);
   std::vector<glm::vec3> colors = shade(mesh);
 
 
@@ -116,7 +116,7 @@ int main() {
   glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
 
 
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window)) {
         currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -135,7 +135,7 @@ int main() {
         cam.ProcessKeyboard(RIGHT, deltaTime);
 
 
-      projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 1000.0f);
+      projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 90000.0f);
       shader.setMat4("projection", projection);
 
       view = cam.GetViewMatrix();

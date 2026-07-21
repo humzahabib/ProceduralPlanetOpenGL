@@ -1,25 +1,34 @@
 //
 // Created by hhabib on 12/07/2026.
+//>
 //
+//
+//enum CAMERA_MOVEMENT {
+//  FORWARD,
+//  BACKWARD,
+//  LEFT,
+//  RIGHT
+//};
+//
+//const float YAW = -90.0f;
+//const float PITCH = 0.0f;
+//const float SPEED = 1500.0f;
+//const float SENSITIVITY = 0.01f;
+//const float ZOOM = 45.0f;
 
 #ifndef PROCEDURALPLANETOPENGL_CAMERA_H
 #define PROCEDURALPLANETOPENGL_CAMERA_H
 
 #include <glad.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
-enum CAMERA_MOVEMENT {
-  FORWARD,
-  BACKWARD,
-  LEFT,
-  RIGHT
-};
+enum CAMERA_MOVEMENT { FORWARD, BACKWARD, LEFT, RIGHT };
 
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float SPEED = 150.0f;
+const float SPEED = 1500.0f;
 const float SENSITIVITY = 0.01f;
 const float ZOOM = 45.0f;
 

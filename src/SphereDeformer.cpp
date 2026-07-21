@@ -7,14 +7,15 @@
 #include <iostream>
 
 void ApplyPerlinNoiseOnIcosphere(Mesh* icosphere, float height, float frequency,
-                                  float randomness) {
+                                  float randomness, float negative) {
 
   std::vector<glm::vec3> newVertices;
 
   for (auto &vertex : icosphere->vertices) {
     float noise = glm::perlin((vertex + randomness) * frequency) * height;
 
-
+    if (negative)
+      noise *= -1.0f;
     glm::vec3 vertexDir = glm::normalize(vertex);
 
     glm::vec3 heightAddition = vertexDir * noise;
