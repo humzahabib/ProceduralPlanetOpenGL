@@ -85,6 +85,11 @@ Next up is calculating per-vertex colour procedurally based on height/slope/lati
 actually looks like a planet instead of a grey rock, then moving into pixel shading and the
 atmospheric scattering stack.
 
+
+## Additional Stuff
+### Star Mesh
+To give the whole a nice space background, I create stars on a black background by randomly putting vertices on ```nStars``` locations on a large sphere and then giving them size and colour based on probability. These vertices are then rendered as points with the given size and colour and give the whole scene a nice starry background.
+
 ## References
 - Icosahedron: [Wikipedia - Icosahedron](https://en.wikipedia.org/wiki/Icosahedron)
 - Geodesic subdivision / icosphere: [Wikipedia - Geodesic polyhedron](https://en.wikipedia.org/wiki/Geodesic_polyhedron)
