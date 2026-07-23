@@ -3,8 +3,8 @@
 - [x] Generate a Regular Icosahedron (Convex)
 - [x] Subdivide it using Slerp (spherical interpolation) to approximate a triangular mesh of a sphere with fairly uniformly distributed vertices.
 - [x] Apply multiple layers of Perlin noise to create landscapes and fine procedural details on the planet.
-- [ ] Apply shading to each vertex and calculate its colour procedurally to give planet colour.
-- [ ] Apply basic pixel shading.
+- [x] Apply shading to each vertex and calculate its colour procedurally to give planet colour.
+- [x] Apply basic pixel shading.
 - [ ] Implement atmospheric rendering.
 - [ ] Direct Light
 - [ ] Single Scattered Light
