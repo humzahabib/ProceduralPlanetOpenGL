@@ -9,6 +9,7 @@
 - [ ] Direct Light
 - [ ] Single Scattered Light
 - [ ] Multiple Scattered Light
+- [ ] Implement an LOD system (optional)
 ## Phase1: Generating a Regular Icosahedron (Convex)
 The reason we are not using a normal (UV) sphere mesh is that the vertices on a UV
 are not evenly distributed as you can see in the following picutre.
