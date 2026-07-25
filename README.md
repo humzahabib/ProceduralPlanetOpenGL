@@ -86,6 +86,7 @@ Next up is calculating per-vertex colour procedurally based on height/slope/lati
 actually looks like a planet instead of a grey rock, then moving into pixel shading and the
 atmospheric scattering stack.
 
+25th August, 2026. Mid progress checkpoint.
 
 ## Additional Stuff
 ### Star Mesh
