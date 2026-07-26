@@ -22,7 +22,7 @@
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
 
 glm::vec3 sunPos = glm::vec3(-0.0f, 20000.0f, 1000.0f);
-float ambientStrength = 0.0f, specularStrength = 0.1f;
+float ambientStrength = 0.01f, specularStrength = 0.1f;
 glm::vec3 surfaceColor = glm::vec3(50.0f / 225.0f, 205.0f / 225.0f, 50.0f / 225.0f);
 
 
@@ -36,7 +36,7 @@ float deltaTime;
 int lastX = 400, lastY = 300;
 bool firstMouse = true;
 
-Camera cam = Camera(glm::vec3(0.0f, 0.0f, -20.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f);;
+Camera cam = Camera(glm::vec3(0.0f, 0.0f, -25000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f);;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 #pragma endregion
@@ -265,18 +265,24 @@ int main() {
   glBindTexture(GL_TEXTURE_2D, colorBuffer);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 1080, 0, GL_RGBA, GL_FLOAT, nullptr);
 
-
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 
 
   unsigned int rboDepth;
   glGenRenderbuffers(1, &rboDepth);
   glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1920, 1080);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1920, 1080);
 
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-  glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::cout << "Frame Buffer is incomplete." << std::endl;
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
 #pragma endregion
 
@@ -347,7 +353,9 @@ int main() {
       coronaShader.setMat4("model", model);
       coronaShader.setVec3("cameraPos", cam.position);
 
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+      glViewport(0, 0, 1920, 1080);
+
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       planetShader.setMat4("model", model);
@@ -369,12 +377,15 @@ int main() {
       glBindFramebuffer(GL_FRAMEBUFFER,0);
 
 
-      //hdrShader.use();
-      //glActiveTexture(GL_TEXTURE0);
-      //glBindTexture(GL_TEXTURE_2D, colorBuffer);
-      //hdrShader.setInt("hdrBuffer",0);
+      hdrShader.use();
+      glDisable(GL_DEPTH_TEST);
+      glBindVertexArray(texVAO);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, colorBuffer);
+      hdrShader.setInt("hdrBuffer",0);
 
-      //glBindVertexArray(texVAO);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+      glEnable(GL_DEPTH_TEST);
 
 
       glfwSwapBuffers(window);
