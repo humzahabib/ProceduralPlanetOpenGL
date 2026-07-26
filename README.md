@@ -3,12 +3,13 @@
 - [x] Generate a Regular Icosahedron (Convex)
 - [x] Subdivide it using Slerp (spherical interpolation) to approximate a triangular mesh of a sphere with fairly uniformly distributed vertices.
 - [x] Apply multiple layers of Perlin noise to create landscapes and fine procedural details on the planet.
-- [ ] Apply shading to each vertex and calculate its colour procedurally to give planet colour.
-- [ ] Apply basic pixel shading.
+- [x] Apply shading to each vertex and calculate its colour procedurally to give planet colour.
+- [x] Apply basic pixel shading.
 - [ ] Implement atmospheric rendering.
 - [ ] Direct Light
 - [ ] Single Scattered Light
 - [ ] Multiple Scattered Light
+- [ ] Implement an LOD system (optional)
 ## Phase1: Generating a Regular Icosahedron (Convex)
 The reason we are not using a normal (UV) sphere mesh is that the vertices on a UV
 are not evenly distributed as you can see in the following picutre.
@@ -85,6 +86,7 @@ Next up is calculating per-vertex colour procedurally based on height/slope/lati
 actually looks like a planet instead of a grey rock, then moving into pixel shading and the
 atmospheric scattering stack.
 
+25th August, 2026. Mid progress checkpoint.
 
 ## Additional Stuff
 ### Star Mesh
