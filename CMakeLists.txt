@@ -10,19 +10,27 @@ find_package(glfw3 REQUIRED)
 add_executable(ProceduralPlanetOpenGL
         src/main.cpp
         src/icosahedronGenerator.cpp
-        src/shader.cpp
+        src/graphics/Shader.cpp
         src/glad.c
-        include/camera.h
-        src/camera.cpp
+        include/core/Camera.h
+        src/core/Camera.cpp
         include/helpers.h
-        include/Mesh.h
-        src/Mesh.cpp
+        include/graphics/Mesh.h
+        src/graphics/Mesh.cpp
         include/SphereDeformer.h
         src/SphereDeformer.cpp
         include/TerrainShader.h
         src/TerrainShader.cpp
         include/starMeshGenerator.h
         src/starMeshGenerator.cpp
+        include/core/Application.h
+        include/core/Window.h
+        src/core/Window.cpp
+        include/renderer/Renderer.h
+        src/Renderer/Renderer.cpp
+        include/graphics/Framebuffer.h
+        include/graphics/FullscreenQuad.h
+        src/graphics/Framebuffer.cpp
 )
 
 target_include_directories(ProceduralPlanetOpenGL PRIVATE

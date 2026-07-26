@@ -8,7 +8,7 @@
 #include <iostream>
 #include <tuple>
 
-#include "./../include/Mesh.h"
+#include "../include/graphics/Mesh.h"
 
 void getIcosahedronVertices(float size, std::vector<glm::vec3>& vertices) {
     float gr = (1.0f + std::sqrt(5.0f)) / 2.0f;

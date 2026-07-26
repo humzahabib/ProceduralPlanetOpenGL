@@ -10,7 +10,7 @@
 #include <set>
 #include <vector>
 
-#include "Mesh.h"
+#include "graphics/Mesh.h"
 
 void getIcosahedronVertices(float size, glm::vec3 *vertices);
 std::vector<std::vector<int>> getNeighborVertices(glm::vec3 *vertices);

@@ -2,9 +2,11 @@
 // Created by hhabib on 16/07/2026.
 //
 #define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtx/rotate_vector.hpp"
-#include "../include/Mesh.h"
+#include "../../include/graphics/Mesh.h"
+
 #include <map>
+
+#include "glm/gtx/rotate_vector.hpp"
 
 Mesh::Mesh() {
   vertices = {};

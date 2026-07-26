@@ -7,8 +7,7 @@
 
 
 #include "./../include/TerrainShader.h"
-#include "../include/Mesh.h"
-
+#include "graphics/Mesh.h"
 
 std::vector<glm::vec3> shade(Mesh &mesh);
 

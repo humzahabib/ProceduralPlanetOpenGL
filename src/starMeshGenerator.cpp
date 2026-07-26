@@ -7,9 +7,8 @@
 #include <glm/ext/scalar_constants.hpp>
 #include <random>
 
+#include "../include/graphics/Mesh.h"
 #include "../include/helpers.h"
-#include "./../include/Mesh.h"
-
 
 void generateRandomStars(Mesh &starMesh, float skyboxRadius, int nStars) {
   std::mt19937 rng(std::random_device{}());

@@ -5,7 +5,8 @@
 #ifndef PROCEDURALPLANETOPENGL_MESH_H
 #define PROCEDURALPLANETOPENGL_MESH_H
 
-#include <helpers.h>
+#include <../helpers.h>
+
 #include <fstream>
 #include <iostream>
 

@@ -2,26 +2,25 @@
 // Created by hhabib on 07/07/2026.
 //
 
-#include <../include/shader.h>
+#include <../include/graphics/Shader.h>
+#include <./../include/starMeshGenerator.h>
 #include <GLFW/glfw3.h>
 #include <glad.h>
 
 #include <chrono>
+#include <glm/gtc/noise.hpp>
 #include <iostream>
 
-#include "../include/camera.h"
+#include "../include/core/Camera.h"
 #include "../include/icosahedronGenerator.h"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
 #include "./../include/SphereDeformer.h"
 #include "./../include/TerrainShader.h"
-#include <glm/gtc/noise.hpp>
-#include <./../include/starMeshGenerator.h>
-
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
 
-glm::vec3 sunPos = glm::vec3(-0.0f, 20000.0f, 1000.0f);
+glm::vec3 sunPos = glm::vec3(-15000.0f, 15000.0f, 0.0f);
 float ambientStrength = 0.01f, specularStrength = 0.1f;
 glm::vec3 surfaceColor = glm::vec3(50.0f / 225.0f, 205.0f / 225.0f, 50.0f / 225.0f);
 
@@ -36,7 +35,7 @@ float deltaTime;
 int lastX = 400, lastY = 300;
 bool firstMouse = true;
 
-Camera cam = Camera(glm::vec3(0.0f, 0.0f, -25000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f);;
+Camera cam = Camera(glm::vec3(0.0f, 0.0f, -30000.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f);;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 #pragma endregion
@@ -99,17 +98,20 @@ int main() {
   std::cout << starSizes.size() << '\n';
   std::cout << starColors.size() << '\n';
 
-  sun.loopSubdivide(8);
-  coronaSun.loopSubdivide(6);
+  sun.loopSubdivide(7);
+  coronaSun.loopSubdivide(3);
   sun.setPosition(sunPos);
   coronaSun.setPosition(sunPos);
 
 
-  planet.loopSubdivide(7);
+  planet.loopSubdivide(9);
 
-  ApplyPerlinNoiseOnIcosphere(&planet, 800.0f, 1.0f/(900 * 2.0f), 0, true);
-  ApplyPerlinNoiseOnIcosphere(&planet, 400.0f, 1.0f / (5000.0f * 1.60f), 2, false);
-  ApplyPerlinNoiseOnIcosphere(&planet, 50.0f, 1.0 / 25.0f, 3, false);
+  ApplyPerlinNoiseOnIcosphere(&planet, 600.0f, 1.0f/(1200 * 2.0f), 0, true);
+  planet.calculateNormals();
+  ApplyPerlinNoiseOnIcosphere(&planet, 200.0f, 1.0f / (500.0f * 1.60f), 2, false);
+  planet.calculateNormals();
+  ApplyPerlinNoiseOnIcosphere(&planet, 10.0f, 1.0 / 100.0f, 3, false);
+  planet.calculateNormals();
   std::vector<glm::vec3> colors = shade(planet);
   //
   // std::vector<glm::vec3> sunColor
