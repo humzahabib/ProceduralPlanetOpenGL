@@ -21,7 +21,7 @@
 
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
 
-glm::vec3 sunPos = glm::vec3(-10000.0f, 10000.0f, 10000.0f);
+glm::vec3 sunPos = glm::vec3(-0.0f, 20000.0f, 1000.0f);
 float ambientStrength = 0.0f, specularStrength = 0.1f;
 glm::vec3 surfaceColor = glm::vec3(50.0f / 225.0f, 205.0f / 225.0f, 50.0f / 225.0f);
 
@@ -57,7 +57,7 @@ int main() {
 
   Mesh planet, sun, stars, coronaSun;
 
-  genIcosahedron(8000, planet);
+  genIcosahedron(9000, planet);
   genIcosahedron(1000, sun);
   genIcosahedron(1200, coronaSun);
 
@@ -109,7 +109,7 @@ int main() {
 
   ApplyPerlinNoiseOnIcosphere(&planet, 800.0f, 1.0f/(900 * 2.0f), 0, true);
   ApplyPerlinNoiseOnIcosphere(&planet, 400.0f, 1.0f / (5000.0f * 1.60f), 2, false);
-  ApplyPerlinNoiseOnIcosphere(&planet, 0.50f, 1.0 / 25.0f, 3, false);
+  ApplyPerlinNoiseOnIcosphere(&planet, 50.0f, 1.0 / 25.0f, 3, false);
   std::vector<glm::vec3> colors = shade(planet);
   //
   // std::vector<glm::vec3> sunColor
@@ -256,19 +256,18 @@ int main() {
 
 #pragma region HDR Frame Buffer
   unsigned int hdrFBO;
-  unsigned int colorBuffer;
-
-  glGenTextures(1, &colorBuffer);
-  glBindTexture(GL_TEXTURE_2D, colorBuffer);
   glGenFramebuffers(1, &hdrFBO);
   glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+  // Texture to store image created
+  unsigned int colorBuffer;
+  glGenTextures(1, &colorBuffer);
+  glBindTexture(GL_TEXTURE_2D, colorBuffer);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 1080, 0, GL_RGBA, GL_FLOAT, nullptr);
 
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 
 
   unsigned int rboDepth;

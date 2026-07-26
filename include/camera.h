@@ -28,7 +28,7 @@ enum CAMERA_MOVEMENT { FORWARD, BACKWARD, LEFT, RIGHT };
 
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float SPEED = 1500.0f;
+const float SPEED = 4000.0f;
 const float SENSITIVITY = 0.01f;
 const float ZOOM = 45.0f;
 
