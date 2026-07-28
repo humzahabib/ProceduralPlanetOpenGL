@@ -302,6 +302,21 @@ int main() {
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
+  unsigned int atmVBO, atmVAO;
+  glGenBuffers(1, &atmVBO);
+  glGenVertexArrays(1, &atmVAO);
+
+  glBindVertexArray(atmVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, atmVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+  glEnableVertexAttribArray(0);
+
+  glBindBuffer(GL_ARRAY_BUFFER, texVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
 
   Shader hdrShader = Shader("./../shaders/hdr/vertexShader.glsl", "./../shaders/hdr/fragShader.glsl");
 
