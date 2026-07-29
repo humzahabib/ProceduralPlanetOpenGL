@@ -23,6 +23,7 @@ add_executable(ProceduralPlanetOpenGL
         src/TerrainShader.cpp
         include/starMeshGenerator.h
         src/starMeshGenerator.cpp
+        include/atmPrecomputation.h
 )
 
 target_include_directories(ProceduralPlanetOpenGL PRIVATE
