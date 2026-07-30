@@ -14,7 +14,7 @@ add_executable(ProceduralPlanetOpenGL
         src/glad.c
         include/core/Camera.h
         src/core/Camera.cpp
-        include/helpers.h
+        include/terrain/helpers.h
         include/graphics/Mesh.h
         src/graphics/Mesh.cpp
         include/SphereDeformer.h
@@ -31,6 +31,14 @@ add_executable(ProceduralPlanetOpenGL
         include/graphics/Framebuffer.h
         include/graphics/FullscreenQuad.h
         src/graphics/Framebuffer.cpp
+        src/graphics/Framebuffer.cpp
+        include/graphics/FullscreenQuad.h
+        include/graphics/Framebuffer.h
+        src/graphics/FullscreenQuad.cpp
+        include/scene/Sun.h
+        include/core/Transform.h
+        src/core/Transform.cpp
+        src/scene/Sun.cpp
 )
 
 target_include_directories(ProceduralPlanetOpenGL PRIVATE

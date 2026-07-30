@@ -1,7 +1,7 @@
 //
 // Created by hhabib on 16/07/2026.
 //
-#include "../include/icosahedronGenerator.h"
+#include "../include/terrain/icosahedronGenerator.h"
 
 #include <array>
 #include <fstream>

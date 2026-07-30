@@ -5,8 +5,8 @@
 #ifndef PROCEDURALPLANETOPENGL_SPHEREDEFORMER_H
 #define PROCEDURALPLANETOPENGL_SPHEREDEFORMER_H
 
-#include <./helpers.h>
-#include <graphics/Mesh.h>
+#include <../graphics/Mesh.h>
+#include <../helpers.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>

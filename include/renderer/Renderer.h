@@ -9,6 +9,7 @@
 #include "graphics/FullscreenQuad.h"
 #include "graphics/Shader.h"
 
+
 class Mesh;
 class Camera;
 
@@ -28,7 +29,7 @@ public:
 private:
   Camera *n_camera;
   Framebuffer n_hdrFrameBuffer;
-  FullScreenQuad n_fullscreenQuad;
+  FullscreenQuad n_fullscreenQuad;
   Shader n_hdrShader;
 
   int n_width = 0, n_height = 0;

@@ -6,7 +6,9 @@
 
 #include <map>
 
+#include <glad.h>
 #include "glm/gtx/rotate_vector.hpp"
+
 
 Mesh::Mesh() {
   vertices = {};
@@ -18,6 +20,59 @@ Mesh::Mesh(glm::vec3 position, std::vector<glm::vec3> vertices, std::vector<Tria
   for (const auto& vertex : vertices)
     this -> vertices.push_back(vertex + position);
 }
+
+
+bool Mesh::initialize()
+{
+  indexCount = static_cast<unsigned int>(triangles.size() * 3);
+
+  // Generate OpenGL objects
+  glGenVertexArrays(1, &vao);
+  glGenBuffers(1, &vbo);
+  glGenBuffers(1, &ebo);
+
+  // Bind VAO
+  glBindVertexArray(vao);
+
+
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+  glBufferData(
+      GL_ARRAY_BUFFER,
+      vertices.size() * sizeof(glm::vec3),
+      vertices.data(),
+      GL_STATIC_DRAW
+  );
+
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+  glBufferData(
+      GL_ELEMENT_ARRAY_BUFFER,
+      triangles.size() * sizeof(Triangle),
+      triangles.data(),
+      GL_STATIC_DRAW
+  );
+
+  glVertexAttribPointer(
+      0,                          // location
+      3,
+      GL_FLOAT,
+      GL_FALSE,
+      sizeof(glm::vec3),
+      (void*)0
+  );
+
+  glEnableVertexAttribArray(0);
+
+  // Cleanup
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+
+  return true;
+}
+
+
 
 void Mesh::Subdivide() {
   std::vector<glm::vec3> newVertices;
@@ -123,4 +178,18 @@ int Mesh::writeToFile() {
   trianglesFile.close();
 
   return 0;
+}
+
+
+
+void Mesh::draw() const {
+  glBindVertexArray(vao);
+
+  glDrawElements(
+      GL_TRIANGLES,
+      static_cast<GLsizei>(triangles.size() * 3),
+      GL_UNSIGNED_INT,
+      nullptr);
+
+  glBindVertexArray(0);
 }

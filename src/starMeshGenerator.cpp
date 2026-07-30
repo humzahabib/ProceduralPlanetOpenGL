@@ -2,13 +2,13 @@
 // Created by hhabib on 22/07/2026.
 //
 
-#include "../include/starMeshGenerator.h"
+#include "../include/terrain/starMeshGenerator.h"
 
 #include <glm/ext/scalar_constants.hpp>
 #include <random>
 
 #include "../include/graphics/Mesh.h"
-#include "../include/helpers.h"
+#include "../include/terrain/helpers.h"
 
 void generateRandomStars(Mesh &starMesh, float skyboxRadius, int nStars) {
   std::mt19937 rng(std::random_device{}());

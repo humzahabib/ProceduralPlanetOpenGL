@@ -5,7 +5,7 @@
 #ifndef PROCEDURALPLANETOPENGL_STARMESHGENERATOR_H
 #define PROCEDURALPLANETOPENGL_STARMESHGENERATOR_H
 
-#include "graphics/Mesh.h"
+#include "../graphics/Mesh.h"
 
 void generateRandomStars(Mesh &starMesh, float skyboxRadius, int nStars);
 

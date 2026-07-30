@@ -2,7 +2,7 @@
 // Created by hhabib on 18/07/2026.
 //
 
-#include "./../include/SphereDeformer.h"
+#include "../include/terrain/SphereDeformer.h"
 
 #include <iostream>
 

@@ -5,12 +5,12 @@
 #ifndef PROCEDURALPLANETOPENGL_PLANETGENERATOR_H
 #define PROCEDURALPLANETOPENGL_PLANETGENERATOR_H
 
-#include <./helpers.h>
+#include <../helpers.h>
 
 #include <set>
 #include <vector>
 
-#include "graphics/Mesh.h"
+#include "../graphics/Mesh.h"
 
 void getIcosahedronVertices(float size, glm::vec3 *vertices);
 std::vector<std::vector<int>> getNeighborVertices(glm::vec3 *vertices);

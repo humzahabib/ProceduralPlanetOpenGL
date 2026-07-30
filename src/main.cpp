@@ -12,8 +12,8 @@
 #include <iostream>
 
 #include "../include/core/Camera.h"
-#include "../include/icosahedronGenerator.h"
-#include "./../include/SphereDeformer.h"
+#include "../include/terrain/SphereDeformer.h"
+#include "../include/terrain/icosahedronGenerator.h"
 #include "./../include/TerrainShader.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
