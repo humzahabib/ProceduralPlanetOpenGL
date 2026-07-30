@@ -22,6 +22,8 @@
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
 
 glm::vec3 sunPos = glm::vec3(-0.0f, 20000.0f, 1000.0f);
+float sunRadius = 20024.0f;
+float sunAngle = 45.0f;
 float ambientStrength = 0.01f, specularStrength = 0.1f;
 glm::vec3 surfaceColor = glm::vec3(50.0f / 225.0f, 205.0f / 225.0f, 50.0f / 225.0f);
 
@@ -302,20 +304,7 @@ int main() {
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
-  unsigned int atmVBO, atmVAO;
-  glGenBuffers(1, &atmVBO);
-  glGenVertexArrays(1, &atmVAO);
 
-  glBindVertexArray(atmVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, atmVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-
-  glBindBuffer(GL_ARRAY_BUFFER, texVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
-  glEnableVertexAttribArray(1);
 
 
   Shader hdrShader = Shader("./../shaders/hdr/vertexShader.glsl", "./../shaders/hdr/fragShader.glsl");
@@ -323,14 +312,51 @@ int main() {
   Shader coronaShader = Shader("./../shaders/corona/vertexShader.glsl", "./../shaders/corona/fragShader.glsl");
 
 
+#pragma region Transmittance Precomputations
+
+
+  unsigned int transmittanceFBO;
+  glGenFramebuffers(1, &transmittanceFBO);
+
+
+  unsigned int transmittanceTex;
+  glGenTextures(1, &transmittanceTex);
+  glBindTexture(GL_TEXTURE_2D, transmittanceTex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 256, 64, 0, GL_RGBA, GL_FLOAT, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, transmittanceFBO);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, transmittanceTex, 0);
+
+  Shader transmittanceShader = Shader("./../shaders/precompute/transmittanceVertex.glsl", "./../shaders/precompute/transmittanceFrag.glsl");
+  transmittanceShader.use();
+
+  glViewport(0, 0, 256, 64);
+  glBindVertexArray(texVAO);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
+#pragma endregion
+
+  planetShader.use();
+  planetShader.setVec3("u_planetCenter", glm::vec3(0.0f, 0.0f, 0.0f));
+  planetShader.setFloat("u_bottomRadius", 9000.0f);
+  planetShader.setFloat("u_topRadius", 12000.0f);
+  planetShader.setFloat("u_sunIntensity", 10.0f);
+  glUniform1i(glGetUniformLocation(planetShader.ID, "u_transmittanceLUT"), 0);
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window)) {
         currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+      sunPos = glm::vec3(cos(sunAngle) * sunRadius, sin(sunAngle) * sunRadius, 0.0f);
+      sun.setPosition(sunPos);
+      coronaSun.setPosition(sunPos);
 
-      planetShader.setVec3("viewPos", cam.position);
 
       if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
           cam.ProcessKeyboard(FORWARD, deltaTime);
@@ -340,6 +366,11 @@ int main() {
         cam.ProcessKeyboard(LEFT, deltaTime);
       if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cam.ProcessKeyboard(RIGHT, deltaTime);
+      if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        sunAngle += 1.0f * deltaTime;
+      if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        sunAngle -= 1.0f * deltaTime;
+
 
 
       projection = glm::perspective(glm::radians(45.0f), 1920.0f / 1080.0f, 0.1f, 900000.0f);
@@ -347,9 +378,12 @@ int main() {
 
       view = cam.GetViewMatrix();
       planetShader.use();
+
+      planetShader.setVec3("u_sunDir", glm::normalize(sunPos));
       planetShader.setMat4("projection", projection);
       planetShader.setMat4("view", view);
       planetShader.setMat4("model", model);
+      planetShader.setVec3("viewPos", cam.position);
 
       sunShader.use();
       sunShader.setMat4("view", view);
@@ -375,7 +409,11 @@ int main() {
 
       planetShader.setMat4("model", model);
       glBindVertexArray(planetVAOs[0]);
+
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, transmittanceTex);
       planetShader.use();
+
       glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(planet.triangles.size() * 3), GL_UNSIGNED_INT, nullptr);
       sunShader.use();
       glBindVertexArray(sunVAOs[0]);
