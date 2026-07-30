@@ -19,41 +19,42 @@ uniform vec3 viewPos;  // Camera position
 
 uniform sampler2D u_transmittanceLUT;
 
-vec2 getTransmittanceUV(float r, float mu) {
-    float u = (mu + 1.0) / 2.0;
-    float v = (r - u_bottomRadius) / (u_topRadius - u_bottomRadius);
-    return clamp(vec2(u, v), 0.0, 1.0);
+vec2 getTransmittanceUV(float mu, float r)
+{
+    float u = (r - u_bottomRadius) / (u_topRadius - u_bottomRadius);
+    float v = (mu + 1) / 2;
+
+    return clamp(vec2(v, u), 0.0, 1.0f);
 }
 
 void main() {
-    // 1. Calculate relative position and Zenith (straight up)
-    vec3 planetToFrag = pos - u_planetCenter;
-    float r = length(planetToFrag);
-    vec3 zenith = planetToFrag / r;
+    vec3 centerToFrag = pos - u_planetCenter;
+    float height = length(centerToFrag);
+    vec3 zenith = centerToFrag / height;
+    float mu = dot(zenith, u_sunDir);
 
-    // 2. Sun Transmittance
-    float mu_s = dot(zenith, u_sunDir);
-    vec2 uv_s = getTransmittanceUV(r, mu_s);
-    vec3 sunTransmittance = texture(u_transmittanceLUT, uv_s).rgb;
+    vec2 sunTransUV = getTransmittanceUV(mu, height);
+    vec3 sunTransmittane = texture(u_transmittanceLUT, sunTransUV).rgb;
 
-    // 3. Lambertian BRDF
-    vec3 N = normalize(normal);
-    vec3 L = normalize(u_sunDir);
-    float NdotL = max(dot(N, L), 0.0);
 
-    vec3 diffuseBRDF = surfaceColor / 3.14159265;
-
-    // Sun Energy * Atmosphere survival * Dirt reflection * Angle
     vec3 sunEnergy = sunLight * u_sunIntensity;
-    vec3 bouncedLight = (sunEnergy * sunTransmittance) * diffuseBRDF * NdotL;
+    vec3 brdf = surfaceColor / 3.1415;
+    float cosine = max(dot(normal, u_sunDir), 0.0);
 
-    // 4. View Transmittance (Return trip to camera)
-    vec3 V = normalize(viewPos - pos);
-    float mu_v = dot(zenith, V);
-    vec2 uv_v = getTransmittanceUV(r, mu_v);
-    vec3 viewTransmittance = texture(u_transmittanceLUT, uv_v).rgb;
 
-    vec3 finalRadiance = bouncedLight * viewTransmittance;
 
-    FragColor = vec4(finalRadiance, 1.0);
+    vec3 planetToCam = viewPos - u_planetCenter;
+    vec3 camZenith = normalize(planetToCam);
+    float cam_mu = dot(camZenith, normalize(viewPos - pos));
+    float cam_r = clamp(length(viewPos - u_planetCenter), u_bottomRadius, u_topRadius);
+
+    vec3 camTrans = texture(u_transmittanceLUT, getTransmittanceUV(cam_mu, cam_r)).rgb;
+    float frag_mu = dot(zenith, normalize(viewPos - pos));
+    vec3 fragToSpaceTrans = texture(u_transmittanceLUT, getTransmittanceUV(frag_mu, height)).rgb;
+
+    vec3 backToCamTrans = fragToSpaceTrans / max(camTrans, 0.0001f);
+
+    FragColor = vec4(sunEnergy * sunTransmittane * brdf * cosine * backToCamTrans, 1.0f);
+
+
 }

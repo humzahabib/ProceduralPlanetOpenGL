@@ -344,7 +344,7 @@ int main() {
   planetShader.setVec3("u_planetCenter", glm::vec3(0.0f, 0.0f, 0.0f));
   planetShader.setFloat("u_bottomRadius", 9000.0f);
   planetShader.setFloat("u_topRadius", 12000.0f);
-  planetShader.setFloat("u_sunIntensity", 20.0f);
+  planetShader.setFloat("u_sunIntensity", 10.0f);
   glUniform1i(glGetUniformLocation(planetShader.ID, "u_transmittanceLUT"), 0);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
