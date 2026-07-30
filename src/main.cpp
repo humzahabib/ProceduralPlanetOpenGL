@@ -273,12 +273,18 @@ int main() {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 
 
-  unsigned int rboDepth;
-  glGenRenderbuffers(1, &rboDepth);
-  glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1920, 1080);
+  unsigned int depthTexture;
+  glGenRenderbuffers(1, &depthTexture);
+  glBindRenderbuffer(GL_TEXTURE_2D, depthTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+  Shader atmosphereShader = Shader("../shaders/atmosphere/vertexShader.glsl", "./../shaders/atmosphere/fragShader.glsl");
+  atmosphereShader.use();
+  atmosphereShader.setInt("u_transmittanceLUT", 0);
+  atmosphereShader.setInt("u_depthTexture", 1);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "Frame Buffer is incomplete." << std::endl;
@@ -338,13 +344,19 @@ int main() {
   glBindVertexArray(texVAO);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 
+
+
+
 #pragma endregion
+
+
+
 
   planetShader.use();
   planetShader.setVec3("u_planetCenter", glm::vec3(0.0f, 0.0f, 0.0f));
   planetShader.setFloat("u_bottomRadius", 9000.0f);
   planetShader.setFloat("u_topRadius", 12000.0f);
-  planetShader.setFloat("u_sunIntensity", 10.0f);
+  planetShader.setFloat("u_sunIntensity", 20.0f);
   glUniform1i(glGetUniformLocation(planetShader.ID, "u_transmittanceLUT"), 0);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -427,6 +439,31 @@ int main() {
       starShader.use();
       glBindVertexArray(starsVAOs[0]);
       glDrawArrays(GL_POINTS, 0, stars.vertices.size());
+
+
+      glDepthMask(GL_FALSE);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_ONE, GL_ONE);
+
+      atmosphereShader.use();
+
+      glm::mat4 inverseViewProjection = glm::inverse(projection * view);
+      atmosphereShader.setMat4("u_invViewProj", inverseViewProjection);
+      atmosphereShader.setVec3("u_cameraPos", cam.position);
+      atmosphereShader.setVec3("u_sunDir", glm::normalize(sunPos));
+
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, transmittanceTex);
+
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, depthTexture);
+
+      glBindVertexArray(texVAO);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+
+      glDepthMask(GL_TRUE);
+      glDisable(GL_BLEND);
+
       glBindFramebuffer(GL_FRAMEBUFFER,0);
 
 

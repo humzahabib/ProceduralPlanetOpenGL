@@ -59,7 +59,7 @@ void main() {
         t += dt;
     }
 
-    vec3 betaRayleight = vec3(5.8e-6, 13.5e-6, 33.1e-6);
+    vec3 betaRayleight = vec3(5.8e-3, 13.5e-3, 33.1e-3);
     float betaMie = 3.9e-3;
 
     vec3 totalAttenuation = (betaRayleight * rayleighDepth) + (vec3(betaMie) * mieDepth);

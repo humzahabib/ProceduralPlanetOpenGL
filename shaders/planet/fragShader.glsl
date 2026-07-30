@@ -22,7 +22,7 @@ uniform sampler2D u_transmittanceLUT;
 vec2 getTransmittanceUV(float mu, float r)
 {
     float u = (r - u_bottomRadius) / (u_topRadius - u_bottomRadius);
-    float v = (mu + 1) / 2;
+    float v = (mu + 1.0) / 2.0;
 
     return clamp(vec2(v, u), 0.0, 1.0f);
 }
@@ -39,7 +39,7 @@ void main() {
 
     vec3 sunEnergy = sunLight * u_sunIntensity;
     vec3 brdf = surfaceColor / 3.1415;
-    float cosine = max(dot(normal, u_sunDir), 0.0);
+    float cosine = max(dot(normalize(normal), u_sunDir), 0.0);
 
 
 
