@@ -19,14 +19,10 @@
 #include <./../include/starMeshGenerator.h>
 
 
-glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
-
-glm::vec3 sunPos = glm::vec3(-0.0f, 20000.0f, 1000.0f);
-float sunRadius = 20024.0f;
 float sunAngle = 45.0f;
-float ambientStrength = 0.01f, specularStrength = 0.1f;
-glm::vec3 surfaceColor = glm::vec3(50.0f / 225.0f, 205.0f / 225.0f, 50.0f / 225.0f);
-
+float sunRadius = 20024.0f;
+glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
+glm::vec3 sunPos = glm::vec3(-0.0f, 20000.0f, 1000.0f);
 
 
 #pragma region Camera Movement Stuff
@@ -45,7 +41,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 float quadVertices[] =
 {
-
   -1,  1, 0, 1,
   -1, -1, 0, 0,
    1, -1, 1, 0,
@@ -97,9 +92,6 @@ int main() {
 
   }
 
-  std::cout << stars.vertices.size() << '\n';
-  std::cout << starSizes.size() << '\n';
-  std::cout << starColors.size() << '\n';
 
   sun.loopSubdivide(8);
   coronaSun.loopSubdivide(6);
@@ -110,16 +102,21 @@ int main() {
   planet.loopSubdivide(7);
 
   ApplyPerlinNoiseOnIcosphere(&planet, 800.0f, 1.0f/(900 * 2.0f), 0, true);
+  planet.calculateNormals();
   ApplyPerlinNoiseOnIcosphere(&planet, 400.0f, 1.0f / (5000.0f * 1.60f), 2, false);
-  ApplyPerlinNoiseOnIcosphere(&planet, 50.0f, 1.0 / 25.0f, 3, false);
+  planet.calculateNormals();
+  ApplyPerlinNoiseOnIcosphere(&planet, 20.0f, 1.0 / 25.0f, 3, false);
+  planet.calculateNormals();
   std::vector<glm::vec3> colors = shade(planet);
-  //
-  // std::vector<glm::vec3> sunColor
 
   std::cout << "Vertices: " << planet.vertices.size() << '\n';
   std::cout << "Triangles: " << planet.triangles.size() << '\n';
-  glfwInit();  std::vector<glm::vec3> heightNorms = shade(planet);
+  glfwInit();
 
+
+
+
+#pragma region GLFW Window Stuff
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -133,9 +130,15 @@ int main() {
       return -1;
   }
 
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetCursorPosCallback(window, mouse_callback);
+
+#pragma endregion
 
   glViewport(0, 0, 1920, 1080);
 
+
+#pragma region Planet Buffers
 
   unsigned int planetVBOs[3], planetVAOs[1], planetEBOs[1];
 
@@ -171,15 +174,16 @@ int main() {
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(2);
 
-  // Planet shader
-  Shader planetShader = Shader("../shaders/planet/vertexShader.glsl", "../shaders/planet/fragShader.glsl");
+#pragma endregion
+
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_PROGRAM_POINT_SIZE);
 
 
-  unsigned int sunVBOs[1], sunVAOs[1], sunEBOs[1];
+#pragma region Sun Buffers
 
+  unsigned int sunVBOs[1], sunVAOs[1], sunEBOs[1];
 
   glGenBuffers(1, sunVBOs);
   glGenVertexArrays(1, sunVAOs);
@@ -212,7 +216,10 @@ int main() {
   glEnableVertexAttribArray(0);
 
 
+#pragma endregion
 
+
+#pragma region Stars Buffers
   unsigned int starsVBOs[3], starsVAOs[1];
   glGenBuffers(3, starsVBOs);
   glGenVertexArrays(1, starsVAOs);
@@ -233,27 +240,35 @@ int main() {
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(2);
 
+#pragma endregion
 
 
+
+  Shader planetShader = Shader("../shaders/planet/vertexShader.glsl", "../shaders/planet/fragShader.glsl");
   Shader sunShader = Shader("../shaders/sun/vertexShader.glsl", "../shaders/sun/fragShader.glsl");
+  Shader starShader = Shader("../shaders/stars/vertexShader.glsl", "../shaders/stars/fragShader.glsl");
+  Shader atmosphereShader = Shader("../shaders/atmosphere/vertexShader.glsl", "./../shaders/atmosphere/fragShader.glsl");
+  Shader hdrShader = Shader("./../shaders/hdr/vertexShader.glsl", "./../shaders/hdr/fragShader.glsl");
+  Shader coronaShader = Shader("./../shaders/corona/vertexShader.glsl", "./../shaders/corona/fragShader.glsl");
+
+
+
+
+  planetShader.use();
+  planetShader.setVec3("sunLight", sunLight);
+  planetShader.setVec3("lightPos", sunPos);
+  planetShader.setVec3("u_planetCenter", glm::vec3(0.0f, 0.0f, 0.0f));
+  planetShader.setFloat("u_bottomRadius", 9000.0f);
+  planetShader.setFloat("u_topRadius", 12000.0f);
+  planetShader.setFloat("u_sunIntensity", 20.0f);
+  glUniform1i(glGetUniformLocation(planetShader.ID, "u_transmittanceLUT"), 0);
 
   sunShader.use();
   sunShader.setVec3("sunColor", sunLight);
 
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  glfwSetCursorPosCallback(window, mouse_callback);
-
-  planetShader.use();
-  planetShader.setVec3("sunLight", sunLight);
-  planetShader.setVec3("surfaceColor", surfaceColor);
-  planetShader.setFloat("ambientStrength", ambientStrength);
-  planetShader.setVec3("lightPos", sunPos);
-  planetShader.setFloat("specularStrength", specularStrength);
-
-  glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
-
-
-  Shader starShader = Shader("../shaders/stars/vertexShader.glsl", "../shaders/stars/fragShader.glsl");
+  atmosphereShader.use();
+  atmosphereShader.setInt("u_transmittanceLUT", 0);
+  atmosphereShader.setInt("u_depthTexture", 1);
 
 
 #pragma region HDR Frame Buffer
@@ -274,25 +289,22 @@ int main() {
 
 
   unsigned int depthTexture;
-  glGenRenderbuffers(1, &depthTexture);
-  glBindRenderbuffer(GL_TEXTURE_2D, depthTexture);
+  glGenTextures(1, &depthTexture);
+  glBindTexture(GL_TEXTURE_2D, depthTexture);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
-  Shader atmosphereShader = Shader("../shaders/atmosphere/vertexShader.glsl", "./../shaders/atmosphere/fragShader.glsl");
-  atmosphereShader.use();
-  atmosphereShader.setInt("u_transmittanceLUT", 0);
-  atmosphereShader.setInt("u_depthTexture", 1);
+
+#pragma endregion
+
+
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "Frame Buffer is incomplete." << std::endl;
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-#pragma endregion
 
   unsigned int texVBO, texVAO;
 
@@ -309,13 +321,6 @@ int main() {
   glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_DYNAMIC_DRAW);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
   glEnableVertexAttribArray(1);
-
-
-
-
-  Shader hdrShader = Shader("./../shaders/hdr/vertexShader.glsl", "./../shaders/hdr/fragShader.glsl");
-
-  Shader coronaShader = Shader("./../shaders/corona/vertexShader.glsl", "./../shaders/corona/fragShader.glsl");
 
 
 #pragma region Transmittance Precomputations
@@ -351,13 +356,8 @@ int main() {
 
 
 
+  glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
 
-  planetShader.use();
-  planetShader.setVec3("u_planetCenter", glm::vec3(0.0f, 0.0f, 0.0f));
-  planetShader.setFloat("u_bottomRadius", 9000.0f);
-  planetShader.setFloat("u_topRadius", 12000.0f);
-  planetShader.setFloat("u_sunIntensity", 20.0f);
-  glUniform1i(glGetUniformLocation(planetShader.ID, "u_transmittanceLUT"), 0);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window)) {
@@ -445,21 +445,21 @@ int main() {
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE);
 
-      atmosphereShader.use();
-
-      glm::mat4 inverseViewProjection = glm::inverse(projection * view);
-      atmosphereShader.setMat4("u_invViewProj", inverseViewProjection);
-      atmosphereShader.setVec3("u_cameraPos", cam.position);
-      atmosphereShader.setVec3("u_sunDir", glm::normalize(sunPos));
-
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, transmittanceTex);
-
-      glActiveTexture(GL_TEXTURE1);
-      glBindTexture(GL_TEXTURE_2D, depthTexture);
-
-      glBindVertexArray(texVAO);
-      glDrawArrays(GL_TRIANGLES, 0, 6);
+      //atmosphereShader.use();
+//
+      //glm::mat4 inverseViewProjection = glm::inverse(projection * view);
+      //atmosphereShader.setMat4("u_invViewProj", inverseViewProjection);
+      //atmosphereShader.setVec3("u_cameraPos", cam.position);
+      //atmosphereShader.setVec3("u_sunDir", glm::normalize(sunPos));
+//
+      //glActiveTexture(GL_TEXTURE0);
+      //glBindTexture(GL_TEXTURE_2D, transmittanceTex);
+//
+      //glActiveTexture(GL_TEXTURE1);
+      //glBindTexture(GL_TEXTURE_2D, depthTexture);
+//
+      //glBindVertexArray(texVAO);
+      //glDrawArrays(GL_TRIANGLES, 0, 6);
 
       glDepthMask(GL_TRUE);
       glDisable(GL_BLEND);
