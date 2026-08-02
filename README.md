@@ -1,3 +1,7 @@
+
+### Preview
+
+<img width="1920" height="1080" alt="previewGIF" src="https://github.com/user-attachments/assets/ec7bdd95-2561-4248-bdb3-f166dbe5a4c1" />
 # ProceduralPlanetOpenGL
 ## This project has the following phases.
 - [x] Generate a Regular Icosahedron (Convex)
