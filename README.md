@@ -1,8 +1,9 @@
 
-### Preview
-
-<img width="1920" height="1080" alt="previewGIF" src="https://github.com/user-attachments/assets/ec7bdd95-2561-4248-bdb3-f166dbe5a4c1" />
 # ProceduralPlanetOpenGL
+## Preview
+<img width="1920" height="1080" alt="previewGIF" src="https://github.com/user-attachments/assets/ec7bdd95-2561-4248-bdb3-f166dbe5a4c1" />
+
+
 ## This project has the following phases.
 - [x] Generate a Regular Icosahedron (Convex)
 - [x] Subdivide it using Slerp (spherical interpolation) to approximate a triangular mesh of a sphere with fairly uniformly distributed vertices.
