@@ -21,7 +21,9 @@
 float sunAngle = 45.0f;
 float sunRadius = 20024.0f;
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
-glm::vec3 sunPos = glm::vec3(-0.0f, 20000.0f, 1000.0f);
+glm::vec3 sunPos = glm::vec3(-0.0f, 20000000.0f, 1000.0f);
+float atmosphereRadius = 15000.0f;
+
 
 #pragma region Camera Movement Stuff
 
@@ -253,16 +255,13 @@ int main() {
   planetShader.setVec3("lightPos", sunPos);
   planetShader.setVec3("u_planetCenter", glm::vec3(0.0f, 0.0f, 0.0f));
   planetShader.setFloat("u_bottomRadius", 9000.0f);
-  planetShader.setFloat("u_topRadius", 12000.0f);
+  planetShader.setFloat("u_topRadius", atmosphereRadius);
   planetShader.setFloat("u_sunIntensity", 20.0f);
   glUniform1i(glGetUniformLocation(planetShader.ID, "u_transmittanceLUT"), 0);
 
   sunShader.use();
   sunShader.setVec3("sunColor", sunLight);
 
-  atmosphereShader.use();
-  atmosphereShader.setInt("u_transmittanceLUT", 0);
-  atmosphereShader.setInt("u_depthTexture", 1);
 
 #pragma region HDR Frame Buffer
   unsigned int hdrFBO;
@@ -348,6 +347,23 @@ int main() {
 
 #pragma endregion
 
+  unsigned int atmosphereFBO;
+  glGenFramebuffers(1, &atmosphereFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, atmosphereFBO);
+
+  unsigned int atmosphereColorBuffer;
+  glGenTextures(1, &atmosphereColorBuffer);
+  glBindTexture(GL_TEXTURE_2D, atmosphereColorBuffer);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 1080, 0, GL_RGBA, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, atmosphereColorBuffer, 0);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::cout << "Atmosphere Frame Buffer is incomplete." << std::endl;
+
+
+
   glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f),
             projection = glm::mat4(1.0f);
 
@@ -357,8 +373,7 @@ int main() {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-    sunPos =
-        glm::vec3(cos(sunAngle) * sunRadius, sin(sunAngle) * sunRadius, 0.0f);
+    sunPos = glm::vec3(cos(sunAngle) * sunRadius, sin(sunAngle) * sunRadius, 0.0f);
     sun.setPosition(sunPos);
     coronaSun.setPosition(sunPos);
 
@@ -438,38 +453,54 @@ int main() {
     glBlendFunc(GL_ONE, GL_ONE);
 
     atmosphereShader.use();
-
     glm::mat4 inverseViewProjection = glm::inverse(projection * view);
     atmosphereShader.setMat4("u_invViewProj", inverseViewProjection);
-    atmosphereShader.setVec3("u_cameraPos", cam.position);
+    atmosphereShader.setVec3("u_camPos", cam.position);
+    atmosphereShader.setFloat("u_width", 1920);
+    atmosphereShader.setFloat("u_height", 1080);
+    atmosphereShader.setVec3("u_planetShader", glm::vec3(0.0f));
+    atmosphereShader.setFloat("u_bottomRadius", 9000.0f);
+    atmosphereShader.setFloat("u_topRadius", atmosphereRadius);
+    atmosphereShader.setInt("u_transmittanceLUT", 0);
+    atmosphereShader.setInt("u_depthBuffer", 1);
+    atmosphereShader.setInt("u_colorBuffer", 2);
+
+
+    atmosphereShader.setVec3("u_sunLight", sunLight);
+    atmosphereShader.setFloat("u_sunIntensity", 20.0f);
     atmosphereShader.setVec3("u_sunDir", glm::normalize(sunPos));
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, transmittanceTex);
-
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthTexture);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, colorBuffer);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, atmosphereFBO);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
 
     glBindVertexArray(texVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
     hdrShader.use();
-    glDisable(GL_DEPTH_TEST);
     glBindVertexArray(texVAO);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, colorBuffer);
+    glBindTexture(GL_TEXTURE_2D, atmosphereColorBuffer);
     hdrShader.setInt("hdrBuffer", 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+
   }
 }
 
