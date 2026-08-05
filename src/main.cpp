@@ -19,10 +19,10 @@
 #include "glm/gtc/type_ptr.hpp"
 
 float sunAngle = 45.0f;
-float sunRadius = 20024.0f;
+float sunRadius = 1000.0f;
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
 glm::vec3 sunPos = glm::vec3(-0.0f, 20000000.0f, 1000.0f);
-float atmosphereRadius = 15000.0f;
+float atmosphereRadius = 25000.0f;
 
 
 #pragma region Camera Movement Stuff
@@ -49,7 +49,7 @@ int main() {
   Mesh planet, sun, stars, coronaSun;
 
   genIcosahedron(9000, planet);
-  genIcosahedron(1000, sun);
+  genIcosahedron(9000, sun);
   genIcosahedron(1200, coronaSun);
 
   generateRandomStars(stars, 90000.0f, 1000);
@@ -340,6 +340,8 @@ int main() {
       Shader("./../shaders/precompute/transmittanceVertex.glsl",
              "./../shaders/precompute/transmittanceFrag.glsl");
   transmittanceShader.use();
+  transmittanceShader.setFloat("bottomRadius", 9000);
+  transmittanceShader.setFloat("topRadius", atmosphereRadius);
 
   glViewport(0, 0, 256, 64);
   glBindVertexArray(texVAO);
@@ -458,9 +460,10 @@ int main() {
     atmosphereShader.setVec3("u_camPos", cam.position);
     atmosphereShader.setFloat("u_width", 1920);
     atmosphereShader.setFloat("u_height", 1080);
-    atmosphereShader.setVec3("u_planetShader", glm::vec3(0.0f));
+    atmosphereShader.setVec3("u_planetCenter", glm::vec3(0.0f));
     atmosphereShader.setFloat("u_bottomRadius", 9000.0f);
     atmosphereShader.setFloat("u_topRadius", atmosphereRadius);
+    atmosphereShader.setVec3("u_sunPos", sunPos);
     atmosphereShader.setInt("u_transmittanceLUT", 0);
     atmosphereShader.setInt("u_depthBuffer", 1);
     atmosphereShader.setInt("u_colorBuffer", 2);
