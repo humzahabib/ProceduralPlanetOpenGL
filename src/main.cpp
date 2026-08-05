@@ -91,9 +91,9 @@ int main() {
 
   planet.loopSubdivide(7);
 
-  ApplyPerlinNoiseOnIcosphere(&planet, 800.0f, 1.0f / (900 * 2.0f), 0, true);
+  ApplyPerlinNoiseOnIcosphere(&planet, 300.0f, 1.0f / (900 * 2.0f), 0, false);
   planet.calculateNormals();
-  ApplyPerlinNoiseOnIcosphere(&planet, 400.0f, 1.0f / (5000.0f * 1.60f), 2,
+  ApplyPerlinNoiseOnIcosphere(&planet, 150.0f, 1.0f / (5000.0f * 1.60f), 2,
                               false);
   planet.calculateNormals();
   ApplyPerlinNoiseOnIcosphere(&planet, 20.0f, 1.0 / 25.0f, 3, false);
@@ -325,7 +325,7 @@ int main() {
   unsigned int transmittanceTex;
   glGenTextures(1, &transmittanceTex);
   glBindTexture(GL_TEXTURE_2D, transmittanceTex);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 256, 64, 0, GL_RGBA, GL_FLOAT,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 2048, 1024, 0, GL_RGBA, GL_FLOAT,
                NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -343,7 +343,7 @@ int main() {
   transmittanceShader.setFloat("bottomRadius", 9000);
   transmittanceShader.setFloat("topRadius", atmosphereRadius);
 
-  glViewport(0, 0, 256, 64);
+  glViewport(0, 0, 2048, 1024);
   glBindVertexArray(texVAO);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 

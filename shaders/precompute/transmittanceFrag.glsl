@@ -15,12 +15,12 @@ float ray_sphere_intersect(vec3 origin, vec3 dir, float radius)
     float disc = (b * b) - 4 * a * c;
 
     if (disc > 0.0f)
-        return (-b + sqrt(disc)) / 2.0;
+    return (-b + sqrt(disc)) / 2.0;
     return -1.0f;
 }
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / vec2(256.0, 64.0);
+    vec2 uv = gl_FragCoord.xy / vec2(2048.0, 1024.0);
     float mu = (uv.x * 2.0) - 1.0;
     float r = mix(bottomRadius, topRadius, uv.y);
 
@@ -32,7 +32,7 @@ void main() {
     float groundCheck = ray_sphere_intersect(rayOrigin, rayDir, bottomRadius);
 
     if (groundCheck > 0.0f)
-        rayLength = groundCheck;
+    rayLength = groundCheck;
 
 
     // for air molecules
@@ -40,7 +40,7 @@ void main() {
     // for aerosoles
     float mieDepth = 0.0;
 
-    int numSteps = 40;
+    int numSteps = 300;
     float dt = rayLength / numSteps;
 
     float t = 0.5 * dt;

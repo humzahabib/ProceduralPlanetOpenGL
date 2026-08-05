@@ -81,85 +81,105 @@ void main() {
     vec2 atmCheck = raySphereIntersection(rayOrigin, rayDir, u_topRadius, u_planetCenter);
     vec2 groundCheck = raySphereIntersection(rayOrigin, rayDir, u_bottomRadius, u_planetCenter);
 
-    float tMax = atmCheck.y;
-    if (texture(u_depthBuffer, uv).r < 1.0) {
-        float distanceToTerrain = length(pixelWorld - rayOrigin);
-        tMax = min(tMax, distanceToTerrain);
-    }
 
-    vec3 rayTerminalPoint = rayOrigin + (tMax * rayDir);
+    float endpointT = dot(pixelWorld - rayOrigin, rayDir);
+    vec3 rayTerminalPoint = rayOrigin + (endpointT * rayDir);
+
 
 
     float renderedPixelAltitude = length(rayTerminalPoint - u_planetCenter);
     float camHeight = length(u_camPos - u_planetCenter);
 
+    float initialT;
+    float terminalT;
 
-    if (camHeight <= u_topRadius)
+    if (camHeight > u_topRadius)
     {
-        if (abs(renderedPixelAltitude - u_topRadius) < 10)
+        if (atmCheck.x < 0.0)
         {
+            FragColor = vec4(texture(u_colorBuffer, uv).rgb + finalColor, 1.0);
+            return;
+        }
+        else
+        {
+            initialT = atmCheck.x;
+            terminalT = atmCheck.y;
 
-            float rayLength = length(u_camPos - rayTerminalPoint);
-            int numSteps = 25;
-            float stepSize = rayLength / 25.0;
-            float stepSizeKM = stepSize / 1000.0;
-            float currentT = 0.5 * stepSize;
-
-            vec3 accumulationOfLight = vec3(0);
-
-            float camR = camHeight;
-            float cam_mu = dot(rayDir, normalize(u_camPos - u_planetCenter));
-
-            for (int i = 0; i < numSteps; i++)
-            {
-                vec3 samplePoint = rayOrigin + (currentT * rayDir);
-
-                // checking if the sample point is lit up by the sun
-                vec3 occRayOrigin = samplePoint;
-                vec3 occRayDir = u_sunDir;
-                vec2 groundOcc = raySphereIntersection(occRayOrigin, occRayDir, u_bottomRadius, u_planetCenter);
-                vec3 lightReaching = u_sunIntensity * u_sunLight;
-
-                if (groundOcc.x > 0.0)
-                    lightReaching = vec3(0.0);
-
-
-                vec3 zenithMag = samplePoint - u_planetCenter;
-                float sampleAltitude = length(zenithMag) - u_bottomRadius;
-                float r = length(zenithMag);
-                float mu = dot(u_sunDir, normalize(zenithMag));
-                vec3 transP = getTransmittanceLookUp(mu, r);
-
-                float rayLeighDensity = exp(-sampleAltitude / 80.0);
-                float mieDensity = exp(-sampleAltitude / 12.0);
-
-                float sun_mu = dot(rayDir, -u_sunDir);
-
-                float phaseR = rayleighPhase(sun_mu);
-                float phaseM = miePhae(sun_mu);
-
-                vec3 lightReachingP = lightReaching * transP * ((betaMie * phaseM * mieDensity) + (betaRayleight * phaseR * rayLeighDensity));
-
-                vec3 spaceToCamTrans = getTransmittanceLookUp(cam_mu, camR);
-
-                float mu_p = dot(rayDir, normalize(zenithMag));
-                float r_p = length(zenithMag);
-
-                vec3 spaceToPTrans = getTransmittanceLookUp(mu_p, r_p);
-
-                vec3 transToCam = spaceToCamTrans / spaceToPTrans;
-
-                accumulationOfLight += lightReachingP * transToCam * stepSize;
-
-                currentT += stepSize;
-
-            }
-            finalColor = accumulationOfLight;
-
-
-
+            if (groundCheck.x > 0.0)
+                terminalT = groundCheck.x;
         }
     }
+    else
+    {
+        initialT = 0.0;
+
+        if (renderedPixelAltitude > u_topRadius)
+            terminalT = atmCheck.y;
+        else
+            terminalT = endpointT;
+    }
+
+    vec3 initialP = rayOrigin + (initialT * rayDir);
+    vec3 terminalP = rayOrigin + (terminalT * rayDir);
+
+    float rayLength = length(initialP - terminalP);
+    int numSteps = 40;
+    float stepSize = rayLength / float(numSteps);
+    float currentT = initialT + (0.5 * stepSize);
+
+    vec3 accumulationOfLight = vec3(0);
+
+    float camR = camHeight;
+    float cam_mu = dot(rayDir, normalize(u_camPos - u_planetCenter));
+
+    float viewDensityR = 0.0;
+    float viewDensityM = 0.0;
+
+    for (int i = 0; i < numSteps; i++)
+    {
+        vec3 samplePoint = rayOrigin + (currentT * rayDir);
+
+        // checking if the sample point is lit up by the sun
+        vec3 occRayOrigin = samplePoint;
+        vec3 occRayDir = u_sunDir;
+        vec2 groundOcc = raySphereIntersection(occRayOrigin, occRayDir, u_bottomRadius, u_planetCenter);
+        vec3 lightReaching = u_sunIntensity * u_sunLight;
+
+        if (groundOcc.x > 0.0)
+            lightReaching = vec3(0.0);
+        if(length(rayTerminalPoint - u_camPos) < length(u_camPos - atmCheck.y))
+            lightReaching = texture(u_colorBuffer, uv).rgb;
+
+
+        vec3 zenithMag = samplePoint - u_planetCenter;
+        float sampleAltitude = length(zenithMag) - u_bottomRadius;
+        float r = length(zenithMag);
+        float mu = dot(u_sunDir, normalize(zenithMag));
+        vec3 transP = getTransmittanceLookUp(mu, r);
+
+        float rayLeighDensity = exp(-sampleAltitude / 80.0);
+        float mieDensity = exp(-sampleAltitude / 12.0);
+
+        viewDensityM += mieDensity * stepSize;
+        viewDensityR += rayLeighDensity * stepSize;
+
+        float sun_mu = dot(rayDir, u_sunDir);
+
+        float phaseR = rayleighPhase(sun_mu);
+        float phaseM = miePhae(sun_mu);
+
+        vec3 lightReachingP = lightReaching * transP * ((betaMie * phaseM * mieDensity) + (betaRayleight * phaseR * rayLeighDensity));
+
+        vec3 pToCamTrans = exp(-(betaRayleight * viewDensityR + betaMie * viewDensityM));
+
+        accumulationOfLight += lightReachingP * pToCamTrans * stepSize;
+
+        currentT += stepSize;
+
+    }
+
+
+    finalColor = accumulationOfLight;
 
 
     FragColor = vec4(texture(u_colorBuffer, uv).rgb + finalColor, 1.0);
