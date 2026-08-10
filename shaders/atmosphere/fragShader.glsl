@@ -135,6 +135,12 @@ void main() {
     float viewDensityR = 0.0;
     float viewDensityM = 0.0;
 
+
+    vec3 lightReaching = u_sunIntensity * u_sunLight;
+
+    if(length(rayTerminalPoint - u_camPos) < length(u_camPos - (rayOrigin + (atmCheck.y * rayDir))))
+        lightReaching = texture(u_colorBuffer, uv).rgb;
+
     for (int i = 0; i < numSteps; i++)
     {
         vec3 samplePoint = rayOrigin + (currentT * rayDir);
@@ -143,12 +149,9 @@ void main() {
         vec3 occRayOrigin = samplePoint;
         vec3 occRayDir = u_sunDir;
         vec2 groundOcc = raySphereIntersection(occRayOrigin, occRayDir, u_bottomRadius, u_planetCenter);
-        vec3 lightReaching = u_sunIntensity * u_sunLight;
 
         if (groundOcc.x > 0.0)
             lightReaching = vec3(0.0);
-        if(length(rayTerminalPoint - u_camPos) < length(u_camPos - atmCheck.y))
-            lightReaching = texture(u_colorBuffer, uv).rgb;
 
 
         vec3 zenithMag = samplePoint - u_planetCenter;
@@ -181,8 +184,8 @@ void main() {
 
     finalColor = accumulationOfLight;
 
-
-    FragColor = vec4(texture(u_colorBuffer, uv).rgb + finalColor, 1.0);
+    vec3 viewTransmittance = exp(-(betaRayleight * viewDensityR + betaMie * viewDensityM));
+    FragColor = vec4(texture(u_colorBuffer, uv).rgb * viewTransmittance + finalColor, 1.0);
 
 
 

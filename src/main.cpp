@@ -19,10 +19,11 @@
 #include "glm/gtc/type_ptr.hpp"
 
 float sunAngle = 45.0f;
-float sunRadius = 1000.0f;
+float sunRadius = 40000.0f;
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
-glm::vec3 sunPos = glm::vec3(-0.0f, 20000000.0f, 1000.0f);
-float atmosphereRadius = 25000.0f;
+glm::vec3 sunPos = glm::vec3(-0.0f, 20000000.0f, 0.0f);
+float atmosphereRadius = 11000.0f;
+glm::vec3 planetPos = glm::vec3 (0.0f, 0.0f, 15000);
 
 
 #pragma region Camera Movement Stuff
@@ -34,7 +35,7 @@ float deltaTime;
 int lastX = 400, lastY = 300;
 bool firstMouse = true;
 
-Camera cam = Camera(glm::vec3(0.0f, 0.0f, -25000.0f),
+Camera cam = Camera(glm::vec3(0.0f, 0.0f, 0.0f),
                     glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f);
 ;
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
@@ -86,25 +87,28 @@ int main() {
 
   sun.loopSubdivide(8);
   coronaSun.loopSubdivide(6);
-  sun.setPosition(sunPos);
-  coronaSun.setPosition(sunPos);
-
   planet.loopSubdivide(7);
 
   ApplyPerlinNoiseOnIcosphere(&planet, 300.0f, 1.0f / (900 * 2.0f), 0, false);
   planet.calculateNormals();
   ApplyPerlinNoiseOnIcosphere(&planet, 150.0f, 1.0f / (5000.0f * 1.60f), 2,
-                              false);
+  false);
   planet.calculateNormals();
   ApplyPerlinNoiseOnIcosphere(&planet, 20.0f, 1.0 / 25.0f, 3, false);
   planet.calculateNormals();
+
   std::vector<glm::vec3> colors = shade(planet);
+
+
+  std::cout << colors[0].x << ", " << colors[0].y << std::endl;
 
   std::cout << "Vertices: " << planet.vertices.size() << '\n';
   std::cout << "Triangles: " << planet.triangles.size() << '\n';
-  glfwInit();
+
 
 #pragma region GLFW Window Stuff
+
+  glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -250,17 +254,7 @@ int main() {
   Shader coronaShader = Shader("./../shaders/corona/vertexShader.glsl",
                                "./../shaders/corona/fragShader.glsl");
 
-  planetShader.use();
-  planetShader.setVec3("sunLight", sunLight);
-  planetShader.setVec3("lightPos", sunPos);
-  planetShader.setVec3("u_planetCenter", glm::vec3(0.0f, 0.0f, 0.0f));
-  planetShader.setFloat("u_bottomRadius", 9000.0f);
-  planetShader.setFloat("u_topRadius", atmosphereRadius);
-  planetShader.setFloat("u_sunIntensity", 20.0f);
-  glUniform1i(glGetUniformLocation(planetShader.ID, "u_transmittanceLUT"), 0);
 
-  sunShader.use();
-  sunShader.setVec3("sunColor", sunLight);
 
 
 #pragma region HDR Frame Buffer
@@ -366,8 +360,9 @@ int main() {
 
 
 
-  glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f),
+  glm::mat4 view = glm::mat4(1.0f),
             projection = glm::mat4(1.0f);
+
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   while (!glfwWindowShouldClose(window)) {
@@ -375,9 +370,23 @@ int main() {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-    sunPos = glm::vec3(cos(sunAngle) * sunRadius, sin(sunAngle) * sunRadius, 0.0f);
-    sun.setPosition(sunPos);
-    coronaSun.setPosition(sunPos);
+
+
+    sunPos = glm::vec3(0, cos(sunAngle) * sunRadius, sin(sunAngle) * sunRadius);
+
+
+
+
+    planet.setPosition(planetPos - cam.position);
+    sun.setPosition(sunPos - cam.position);
+    coronaSun.setPosition(sunPos - cam.position);
+    stars.setPosition(glm::vec3(0.0f));
+
+    glm::mat4 sunModel = glm::translate(glm::mat4(1.0), sun.position);
+    glm::mat4 planetModel = glm::translate(glm::mat4(1.0f), planet.position);
+
+    sunShader.use();
+    sunShader.setVec3("sunColor", sunLight);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
       cam.ProcessKeyboard(FORWARD, deltaTime);
@@ -388,53 +397,70 @@ int main() {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
       cam.ProcessKeyboard(RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-      sunAngle += 1.0f * deltaTime;
+      sunAngle += 0.3f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-      sunAngle -= 1.0f * deltaTime;
+      sunAngle -= 0.3f * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_KP_ADD))
+      cam.movementSpeed *= 2.0f;
+    if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT))
+      cam.movementSpeed /= 2.0f;
+
+
 
     projection = glm::perspective(glm::radians(45.0f), 1920.0f / 1080.0f, 0.1f,
                                   900000.0f);
 
     view = cam.GetViewMatrix();
-    planetShader.use();
 
-    planetShader.setVec3("u_sunDir", glm::normalize(sunPos));
+
+    planetShader.use();
+    glUniform1i(glGetUniformLocation(planetShader.ID, "u_transmittanceLUT"), 0);
+    planetShader.setVec3("sunLight", sunLight);
+    planetShader.setVec3("u_planetCenter", planet.position);
+    planetShader.setFloat("u_bottomRadius", 9000.0f);
+    planetShader.setFloat("u_topRadius", atmosphereRadius);
+    planetShader.setFloat("u_sunIntensity", 20.0f);
+    planetShader.setVec3("u_sunDir", glm::normalize(sun.position - planet.position));
     planetShader.setMat4("projection", projection);
     planetShader.setMat4("view", view);
-    planetShader.setMat4("model", model);
-    planetShader.setVec3("viewPos", cam.position);
+    planetShader.setMat4("model", planetModel);
+    planetShader.setVec3("viewPos", glm::vec3(0.0f));
 
     sunShader.use();
+    sunShader.setMat4("model", sunModel);
     sunShader.setMat4("view", view);
     sunShader.setMat4("projection", projection);
-    sunShader.setMat4("model", model);
+
+
+    glm::mat4 starsModel = glm::translate(glm::mat4(1.0f), -cam.position);
+
 
     starShader.use();
     starShader.setMat4("view", view);
     starShader.setMat4("projection", projection);
-    starShader.setMat4("model", model);
+    starShader.setMat4("model", starsModel);
 
     coronaShader.use();
     coronaShader.setMat4("view", view);
     coronaShader.setMat4("projection", projection);
-    coronaShader.setMat4("model", model);
-    coronaShader.setVec3("cameraPos", cam.position);
+    coronaShader.setMat4("model", sunModel);
+    coronaShader.setVec3("cameraPos", glm::vec3(0.0f));
 
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
     glViewport(0, 0, 1920, 1080);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    planetShader.setMat4("model", model);
     glBindVertexArray(planetVAOs[0]);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, transmittanceTex);
-    planetShader.use();
 
+    planetShader.use();
     glDrawElements(GL_TRIANGLES,
                    static_cast<GLsizei>(planet.triangles.size() * 3),
                    GL_UNSIGNED_INT, nullptr);
+
     sunShader.use();
     glBindVertexArray(sunVAOs[0]);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sun.triangles.size() * 3),
@@ -457,13 +483,12 @@ int main() {
     atmosphereShader.use();
     glm::mat4 inverseViewProjection = glm::inverse(projection * view);
     atmosphereShader.setMat4("u_invViewProj", inverseViewProjection);
-    atmosphereShader.setVec3("u_camPos", cam.position);
+    atmosphereShader.setVec3("u_camPos", glm::vec3(0.0));
     atmosphereShader.setFloat("u_width", 1920);
     atmosphereShader.setFloat("u_height", 1080);
-    atmosphereShader.setVec3("u_planetCenter", glm::vec3(0.0f));
+    atmosphereShader.setVec3("u_planetCenter", planet.position);
     atmosphereShader.setFloat("u_bottomRadius", 9000.0f);
     atmosphereShader.setFloat("u_topRadius", atmosphereRadius);
-    atmosphereShader.setVec3("u_sunPos", sunPos);
     atmosphereShader.setInt("u_transmittanceLUT", 0);
     atmosphereShader.setInt("u_depthBuffer", 1);
     atmosphereShader.setInt("u_colorBuffer", 2);
@@ -471,7 +496,7 @@ int main() {
 
     atmosphereShader.setVec3("u_sunLight", sunLight);
     atmosphereShader.setFloat("u_sunIntensity", 20.0f);
-    atmosphereShader.setVec3("u_sunDir", glm::normalize(sunPos));
+    atmosphereShader.setVec3("u_sunDir", glm::normalize(sun.position - planet.position));
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, transmittanceTex);

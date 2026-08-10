@@ -99,10 +99,7 @@ void Mesh::calculateNormals() {
 }
 
 void Mesh::setPosition(glm::vec3 _position) {
-  for (auto& vertex : vertices) {
-    vertex = vertex + _position;
-    position = _position;
-  }
+  position = _position;
 }
 
 int Mesh::writeToFile() {

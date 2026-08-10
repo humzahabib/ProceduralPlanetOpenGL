@@ -49,12 +49,12 @@ void main() {
     float cam_r = clamp(length(viewPos - u_planetCenter), u_bottomRadius, u_topRadius);
 
     vec3 camTrans = texture(u_transmittanceLUT, getTransmittanceUV(cam_mu, cam_r)).rgb;
-    float frag_mu = dot(zenith, normalize(viewPos - pos));
+
+    float frag_mu = dot(normalize(pos - u_planetCenter), normalize(viewPos - pos));
     vec3 fragToSpaceTrans = texture(u_transmittanceLUT, getTransmittanceUV(frag_mu, height)).rgb;
 
     vec3 backToCamTrans = fragToSpaceTrans / max(camTrans, 0.0001f);
 
     FragColor = vec4(sunEnergy * sunTransmittane * brdf * cosine * backToCamTrans, 1.0f);
-
 
 }
