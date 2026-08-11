@@ -73,6 +73,7 @@ while factoring in height, slope and location on the sphere but had to cut on it
 ### Star Mesh
 To give the whole a nice space background, I create stars on a black background by randomly putting vertices on ```nStars``` locations on a large sphere and then giving them size and colour based on probability. These vertices are then rendered as points with the given size and colour and give the whole scene a nice starry background.
 
+### Origin Based Camera
 To deal with floating point inaccuracies and the artifects introduced by them, the renderer uses an
 origin based camera where the eye always stays at the origin and the world revolves around it. That way, floating point inaccuracies never grow large near the camera and no artifacts appear in the camera.
 
