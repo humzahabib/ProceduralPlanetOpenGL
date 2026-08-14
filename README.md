@@ -10,11 +10,12 @@
 - [x] Apply multiple layers of Perlin noise to create landscapes and fine procedural details on the planet.
 - [x] Apply shading to each vertex and calculate its colour procedurally to give planet colour.
 - [x] Apply basic pixel shading.
-- [ ] Implement atmospheric rendering.
-- [ ] Direct Light
-- [ ] Single Scattered Light
-- [ ] Multiple Scattered Light
-- [ ] Implement an LOD system (optional)
+- [] Implement atmospheric rendering.
+- [x] Direct Light.
+- [x] Single Scattered Light.
+- [ ] Precompute single scattered light. 
+- [ ] Multiple Scattered Light.
+- [ ] Implement an LOD system (optional).
 
 ## Phase1: Generating a Regular Icosahedron (Convex)
 The reason we are not using a normal (UV) sphere mesh is that the vertices on a UV
