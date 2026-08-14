@@ -10,7 +10,7 @@
 - [x] Apply multiple layers of Perlin noise to create landscapes and fine procedural details on the planet.
 - [x] Apply shading to each vertex and calculate its colour procedurally to give planet colour.
 - [x] Apply basic pixel shading.
-- [] Implement atmospheric rendering.
+- [x] Implement atmospheric rendering.
 - [x] Direct Light.
 - [x] Single Scattered Light.
 - [ ] Precompute single scattered light. 
