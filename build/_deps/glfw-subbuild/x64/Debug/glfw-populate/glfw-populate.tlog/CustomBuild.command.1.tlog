@@ -1,0 +1,150 @@
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\337F31F5C9B27B70C0107B9084E34410\GLFW-POPULATE-MKDIR.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -Dcfgdir=/Debug -P "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-mkdirs.cmake"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/Debug/glfw-populate-mkdir"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\337F31F5C9B27B70C0107B9084E34410\GLFW-POPULATE-DOWNLOAD.RULE
+setlocal
+cd "C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-gitclone.cmake"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/Debug/glfw-populate-download"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\337F31F5C9B27B70C0107B9084E34410\GLFW-POPULATE-UPDATE.RULE
+setlocal
+cd "C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-src"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -Dcan_fetch=YES -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-gitupdate.cmake"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\337F31F5C9B27B70C0107B9084E34410\GLFW-POPULATE-PATCH.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/Debug/glfw-populate-patch"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\337F31F5C9B27B70C0107B9084E34410\GLFW-POPULATE-CONFIGURE.RULE
+setlocal
+cd "C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/Debug/glfw-populate-configure"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\337F31F5C9B27B70C0107B9084E34410\GLFW-POPULATE-BUILD.RULE
+setlocal
+cd "C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/Debug/glfw-populate-build"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\337F31F5C9B27B70C0107B9084E34410\GLFW-POPULATE-INSTALL.RULE
+setlocal
+cd "C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/Debug/glfw-populate-install"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\337F31F5C9B27B70C0107B9084E34410\GLFW-POPULATE-TEST.RULE
+setlocal
+cd "C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/Debug/glfw-populate-test"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\CFE582365889F6E4E9F44231E10F8D50\GLFW-POPULATE-COMPLETE.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/CMakeFiles/Debug"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/CMakeFiles/Debug/glfw-populate-complete"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/Debug/glfw-populate-done"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKEFILES\19538AE44A638D16B45FF99F9AF00481\GLFW-POPULATE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\GAME DESIGN\DOWNLOADS\PROJECT\PROCEDURALPLANETOPENGL\BUILD\_DEPS\GLFW-SUBBUILD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild" "-BC:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild" --check-stamp-file "C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-subbuild/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

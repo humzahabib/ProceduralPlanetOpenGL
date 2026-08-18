@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\337f31f5c9b27b70c0107b9084e34410\glfw-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\337f31f5c9b27b70c0107b9084e34410\glfw-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\337f31f5c9b27b70c0107b9084e34410\glfw-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\337f31f5c9b27b70c0107b9084e34410\glfw-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\337f31f5c9b27b70c0107b9084e34410\glfw-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\337f31f5c9b27b70c0107b9084e34410\glfw-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\337f31f5c9b27b70c0107b9084e34410\glfw-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\337f31f5c9b27b70c0107b9084e34410\glfw-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\cfe582365889f6e4e9f44231e10f8d50\glfw-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\19538ae44a638d16b45ff99f9af00481\glfw-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Game Design\Downloads\Project\ProceduralPlanetOpenGL\build\_deps\glfw-subbuild\CMakeFiles\glfw-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{4816694C-9B36-3A1A-BCCD-6A8F770526BB}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
