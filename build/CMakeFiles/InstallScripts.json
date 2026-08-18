@@ -1,9 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/cmake_install.cmake",
-		"C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-build/cmake_install.cmake",
-		"C:/Users/Game Design/Downloads/Project/ProceduralPlanetOpenGL/build/_deps/glfw-build/src/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
