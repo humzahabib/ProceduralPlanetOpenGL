@@ -1,6 +1,7 @@
 #version 330 core
 out vec4 FragColor;
 
+// will become obselete
 // Uniforms to shootout rays
 uniform mat4 u_invViewProj;
 uniform vec3 u_camPos;
