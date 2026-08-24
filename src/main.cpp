@@ -42,15 +42,18 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 #pragma endregion
 
-float quadVertices[] = {-1, 1, 0, 1, -1, -1, 0, 0, 1, -1, 1, 0,
-
-                        -1, 1, 0, 1, 1,  -1, 1, 0, 1, 1,  1, 1};
+float quadVertices[] = { -1, 1,   0, 1,
+                         -1, -1,  0, 0,
+                         1, -1,   1, 0,
+                         -1, 1,   0, 1,
+                         1, -1,   1, 0,
+                         1, 1,    1, 1};
 
 int main() {
   Mesh planet, sun, stars, coronaSun;
 
   genIcosahedron(9000, planet);
-  genIcosahedron(9000, sun);
+  genIcosahedron(1500, sun);
   genIcosahedron(1200, coronaSun);
 
   generateRandomStars(stars, 90000.0f, 1000);
@@ -253,8 +256,12 @@ int main() {
                             "./../shaders/hdr/fragShader.glsl");
   Shader coronaShader = Shader("./../shaders/corona/vertexShader.glsl",
                                "./../shaders/corona/fragShader.glsl");
-
-
+  Shader bloomExtractShader = Shader("./../shaders/bloom/extractVert.glsl",
+    "./../shaders/bloom/extractFrag.glsl");
+  Shader bloomblurShader = Shader("./../shaders/bloom/blurVert.glsl",
+    "./../shaders/bloom/blurFrag.glsl");
+  Shader bloomMixShader = Shader("./../shaders/bloom/mixVert.glsl",
+    "./../shaders/bloom/mixFrag.glsl");
 
 
 #pragma region HDR Frame Buffer
@@ -271,6 +278,8 @@ int main() {
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          colorBuffer, 0);
@@ -343,6 +352,7 @@ int main() {
 
 #pragma endregion
 
+
   unsigned int atmosphereFBO;
   glGenFramebuffers(1, &atmosphereFBO);
   glBindFramebuffer(GL_FRAMEBUFFER, atmosphereFBO);
@@ -358,6 +368,45 @@ int main() {
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "Atmosphere Frame Buffer is incomplete." << std::endl;
 
+
+#pragma region Bloom
+
+  unsigned int postProcessFBOA;
+  unsigned int postProcessFBOB;
+
+  glGenFramebuffers(1, &postProcessFBOA);
+  glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOA);
+
+  unsigned int postProcessColorBufferA;
+  glGenTextures(1, &postProcessColorBufferA);
+  glBindTexture(GL_TEXTURE_2D, postProcessColorBufferA);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 1080, 0, GL_RGBA, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessColorBufferA, 0);
+
+
+  glGenFramebuffers(1, &postProcessFBOB);
+  glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOB);
+
+  unsigned int postProcessColorBufferB;
+  glGenTextures(1, &postProcessColorBufferB);
+  glBindTexture(GL_TEXTURE_2D, postProcessColorBufferB);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 1080, 0, GL_RGBA, GL_FLOAT, nullptr);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessColorBufferB, 0);
+
+
+
+
+#pragma endregion
 
 
   glm::mat4 view = glm::mat4(1.0f),
@@ -387,6 +436,7 @@ int main() {
 
     sunShader.use();
     sunShader.setVec3("sunColor", sunLight);
+    sunShader.setFloat("sunIntensity", 20.0f);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
       cam.ProcessKeyboard(FORWARD, deltaTime);
@@ -440,11 +490,11 @@ int main() {
     starShader.setMat4("projection", projection);
     starShader.setMat4("model", starsModel);
 
-    coronaShader.use();
-    coronaShader.setMat4("view", view);
-    coronaShader.setMat4("projection", projection);
-    coronaShader.setMat4("model", sunModel);
-    coronaShader.setVec3("cameraPos", glm::vec3(0.0f));
+    // coronaShader.use();
+    // coronaShader.setMat4("view", view);
+    // coronaShader.setMat4("projection", projection);
+    // coronaShader.setMat4("model", sunModel);
+    // coronaShader.setVec3("cameraPos", glm::vec3(0.0f));
 
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
     glViewport(0, 0, 1920, 1080);
@@ -461,16 +511,16 @@ int main() {
                    static_cast<GLsizei>(planet.triangles.size() * 3),
                    GL_UNSIGNED_INT, nullptr);
 
-    sunShader.use();
-    glBindVertexArray(sunVAOs[0]);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sun.triangles.size() * 3),
-                   GL_UNSIGNED_INT, nullptr);
+    //sunShader.use();
+    //glBindVertexArray(sunVAOs[0]);
+    //glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sun.triangles.size() * 3),
+    //               GL_UNSIGNED_INT, nullptr);
 
-    coronaShader.use();
-    glBindVertexArray(coronaVAO);
-    glDrawElements(GL_TRIANGLES,
-                   static_cast<GLsizei>(coronaSun.triangles.size() * 3),
-                   GL_UNSIGNED_INT, nullptr);
+    // coronaShader.use();
+    // glBindVertexArray(coronaVAO);
+    // glDrawElements(GL_TRIANGLES,
+    //                static_cast<GLsizei>(coronaSun.triangles.size() * 3),
+    //                GL_UNSIGNED_INT, nullptr);
 
     starShader.use();
     glBindVertexArray(starsVAOs[0]);
@@ -513,15 +563,152 @@ int main() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glDisable(GL_BLEND);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
+#pragma region Bloom Pass Horizontal
+    // Render in A
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOA);
+    bloomExtractShader.use();
+    bloomExtractShader.setFloat("BLOOM_THRESH", 0.2f);
+    bloomExtractShader.setFloat("BLOOM_KNEE", 0.2f);
+    bloomExtractShader.setInt("WIDTH", 1920);
+    bloomExtractShader.setInt("HEIGHT", 1080);
+    bloomExtractShader.setInt("hdrTexture", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, atmosphereColorBuffer);
+
+    glBindVertexArray(texVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+    // Render in B
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOB);
+    bloomblurShader.use();
+    bloomblurShader.setBool("horizontal", true);
+    bloomblurShader.setInt("WIDTH", 1920);
+    bloomblurShader.setInt("HEIGHT", 1080);
+    bloomblurShader.setInt("bloomMask", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferA);
+
+
+    glBindVertexArray(texVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Render in A
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOA);
+    bloomblurShader.use();
+    bloomblurShader.setBool("horizontal", true);
+    bloomblurShader.setInt("WIDTH", 1920);
+    bloomblurShader.setInt("HEIGHT", 1080);
+    bloomblurShader.setInt("bloomMask", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferB);
+
+
+    glBindVertexArray(texVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+    // Render in B
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOB);
+    bloomblurShader.use();
+    bloomblurShader.setBool("horizontal", true);
+    bloomblurShader.setInt("WIDTH", 1920);
+    bloomblurShader.setInt("HEIGHT", 1080);
+    bloomblurShader.setInt("bloomMask", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferA);
+
+
+    glBindVertexArray(texVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+#pragma endregion
+
+
+#pragma region Bloom Pass Vertical
+    // Render in A
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOA);
+    bloomblurShader.use();
+    bloomblurShader.setBool("horizontal", false);
+    bloomblurShader.setInt("WIDTH", 1920);
+    bloomblurShader.setInt("HEIGHT", 1080);
+    bloomblurShader.setInt("bloomMask", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferB);
+
+
+    glBindVertexArray(texVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+    // Render in B
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOB);
+    bloomblurShader.use();
+    bloomblurShader.setBool("horizontal", false);
+    bloomblurShader.setInt("WIDTH", 1920);
+    bloomblurShader.setInt("HEIGHT", 1080);
+    bloomblurShader.setInt("bloomMask", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferA);
+
+
+    glBindVertexArray(texVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Render in A
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOA);
+    bloomblurShader.use();
+    bloomblurShader.setBool("horizontal", false);
+    bloomblurShader.setInt("WIDTH", 1920);
+    bloomblurShader.setInt("HEIGHT", 1080);
+    bloomblurShader.setInt("bloomMask", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferB);
+
+
+    glBindVertexArray(texVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+    // Render in B
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOB);
+    bloomblurShader.use();
+    bloomblurShader.setBool("horizontal", false);
+    bloomblurShader.setInt("WIDTH", 1920);
+    bloomblurShader.setInt("HEIGHT", 1080);
+    bloomblurShader.setInt("bloomMask", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferA);
+
+
+    glBindVertexArray(texVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+#pragma endregion
+
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBOA);
+    bloomMixShader.use();
+    bloomMixShader.setInt("baseImage", 0);
+    bloomMixShader.setInt("bloomImage", 1);
+    bloomMixShader.setInt("WIDTH", 1920);
+    bloomMixShader.setInt("HEIGHT", 1080);
+
+    glBindVertexArray(texVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, atmosphereColorBuffer);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferB);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     hdrShader.use();
     glBindVertexArray(texVAO);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, atmosphereColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, postProcessColorBufferA);
     hdrShader.setInt("hdrBuffer", 0);
-
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
