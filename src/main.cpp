@@ -2,51 +2,82 @@
 // Created by hhabib on 07/07/2026.
 //
 
-#include <../include/shader.h>
-#include <./../include/starMeshGenerator.h>
-#include <GLFW/glfw3.h>
+#pragma region Includes
+
 #include <glad.h>
-
 #include <chrono>
-#include <glm/gtc/noise.hpp>
 #include <iostream>
-
+#include <GLFW/glfw3.h>
+#include <glm/gtc/noise.hpp>
 #include "../include/camera.h"
-#include "../include/icosahedronGenerator.h"
-#include "./../include/SphereDeformer.h"
-#include "./../include/TerrainShader.h"
-#include "glm/gtc/matrix_transform.hpp"
+#include <../include/shader.h>
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "./../include/TerrainShader.h"
+#include "./../include/SphereDeformer.h"
+#include <./../include/starMeshGenerator.h>
+#include "../include/icosahedronGenerator.h"
+
+
+#pragma endregion
+
+#pragma region Solar Params
 
 float sunAngle = 45.0f;
 float sunRadius = 40000.0f;
+float sunIntensity = 20.0f;
 glm::vec3 sunLight = glm::vec3(1.0f, 1.0f, 1.0f);
 glm::vec3 sunPos = glm::vec3(-0.0f, 20000000.0f, 0.0f);
-float atmosphereRadius = 11000.0f;
+
+#pragma endregion
+
+#pragma region Precompute Params
+
+int R_SIZE = 1024;
+int MU_SIZE = 2048;
+int MU_S_SIZE = 360;
+int NU_SIZE = 360;
+
+
+#pragma endregion
+
+#pragma region Planet Params
+
+float topRadius = 11000.0f;
+float bottomRadius = 9000.0f;
+
 glm::vec3 planetPos = glm::vec3 (0.0f, 0.0f, 15000);
 
+#pragma endregion
 
-#pragma region Camera Movement Stuff
+#pragma region Camera and Utils Params
 
-float lastFrame = 0.0f;
-float currentFrame = 0.0f;
 float deltaTime;
-
-int lastX = 400, lastY = 300;
+float lastFrame = 0.0f;
 bool firstMouse = true;
+float currentFrame = 0.0f;
+int lastX = 400, lastY = 300;
 
 Camera cam = Camera(glm::vec3(0.0f, 0.0f, 0.0f),
                     glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f);
-;
+
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 #pragma endregion
+
+#pragma region FrameBuffer Params
 
 float quadVertices[] = {-1, 1, 0, 1, -1, -1, 0, 0, 1, -1, 1, 0,
 
                         -1, 1, 0, 1, 1,  -1, 1, 0, 1, 1,  1, 1};
 
+#pragma endregion
+
+
 int main() {
+
+#pragma region World Building
+
   Mesh planet, sun, stars, coronaSun;
 
   genIcosahedron(9000, planet);
@@ -99,12 +130,7 @@ int main() {
 
   std::vector<glm::vec3> colors = shade(planet);
 
-
-  std::cout << colors[0].x << ", " << colors[0].y << std::endl;
-
-  std::cout << "Vertices: " << planet.vertices.size() << '\n';
-  std::cout << "Triangles: " << planet.triangles.size() << '\n';
-
+#pragma endregion
 
 #pragma region GLFW Window Stuff
 
@@ -127,7 +153,8 @@ int main() {
 
 #pragma endregion
 
-  glViewport(0, 0, 1920, 1080);
+
+glViewport(0, 0, 1920, 1080);
 
 #pragma region Planet Buffers
 
@@ -172,9 +199,6 @@ int main() {
 
 #pragma endregion
 
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_PROGRAM_POINT_SIZE);
-
 #pragma region Sun Buffers
 
   unsigned int sunVBOs[1], sunVAOs[1], sunEBOs[1];
@@ -216,6 +240,7 @@ int main() {
 #pragma endregion
 
 #pragma region Stars Buffers
+
   unsigned int starsVBOs[3], starsVAOs[1];
   glGenBuffers(3, starsVBOs);
   glGenVertexArrays(1, starsVAOs);
@@ -241,6 +266,8 @@ int main() {
 
 #pragma endregion
 
+#pragma region Shaders Compilation
+
   Shader planetShader = Shader("../shaders/planet/vertexShader.glsl",
                                "../shaders/planet/fragShader.glsl");
   Shader sunShader = Shader("../shaders/sun/vertexShader.glsl",
@@ -253,44 +280,52 @@ int main() {
                             "./../shaders/hdr/fragShader.glsl");
   Shader coronaShader = Shader("./../shaders/corona/vertexShader.glsl",
                                "./../shaders/corona/fragShader.glsl");
+  Shader transmittanceShader = Shader("./../shaders/precompute/transmittanceVertex.glsl",
+           "./../shaders/precompute/transmittanceFrag.glsl");
 
-
-
+#pragma endregion
 
 #pragma region HDR Frame Buffer
+
   unsigned int hdrFBO;
   glGenFramebuffers(1, &hdrFBO);
   glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
-  // Texture to store image created
+  // Color buffer
   unsigned int colorBuffer;
   glGenTextures(1, &colorBuffer);
   glBindTexture(GL_TEXTURE_2D, colorBuffer);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 1080, 0, GL_RGBA, GL_FLOAT,
-               nullptr);
-
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 1080, 0, GL_RGBA, GL_FLOAT,
+               nullptr);
+  // Attaching color buffer to frame buffer which is bound to HDR fbo.
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          colorBuffer, 0);
 
+  // Depth Buffer
   unsigned int depthTexture;
   glGenTextures(1, &depthTexture);
   glBindTexture(GL_TEXTURE_2D, depthTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 1920, 1080, 0,
-               GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 1920, 1080, 0,
+               GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+  // Attaching depth buffer to frame buffer which is bound to HDR fbo.
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                          depthTexture, 0);
 
-#pragma endregion
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "Frame Buffer is incomplete." << std::endl;
 
+#pragma endregion
+
+  // Binding Framebuffer to monitor again since now we render on monitor.
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#pragma region Image Plane Buffers
 
   unsigned int texVBO, texVAO;
 
@@ -311,37 +346,74 @@ int main() {
                         (void *)(2 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
-#pragma region Transmittance Precomputations
+#pragma endregion
 
+#pragma region  Precomputations
+
+  // Transmittance
   unsigned int transmittanceFBO;
-  glGenFramebuffers(1, &transmittanceFBO);
-
   unsigned int transmittanceTex;
+  glGenFramebuffers(1, &transmittanceFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, transmittanceFBO);
+
   glGenTextures(1, &transmittanceTex);
   glBindTexture(GL_TEXTURE_2D, transmittanceTex);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 2048, 1024, 0, GL_RGBA, GL_FLOAT,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, MU_SIZE, R_SIZE, 0, GL_RGBA, GL_FLOAT,
                NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, transmittanceFBO);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          transmittanceTex, 0);
 
-  Shader transmittanceShader =
-      Shader("./../shaders/precompute/transmittanceVertex.glsl",
-             "./../shaders/precompute/transmittanceFrag.glsl");
   transmittanceShader.use();
-  transmittanceShader.setFloat("bottomRadius", 9000);
-  transmittanceShader.setFloat("topRadius", atmosphereRadius);
+  transmittanceShader.setFloat("bottomRadius", bottomRadius);
+  transmittanceShader.setFloat("topRadius", topRadius);
+  transmittanceShader.setInt("R_SIZE", R_SIZE);
+  transmittanceShader.setInt("MU_SIZE", MU_SIZE);
 
-  glViewport(0, 0, 2048, 1024);
+  glViewport(0, 0, MU_SIZE, R_SIZE);
   glBindVertexArray(texVAO);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 
+
+  // First Irradiance
+  unsigned int firstIrradiacnceFBO;
+  unsigned int firstIrradianceTex;
+  glGenFramebuffers(1, &firstIrradiacnceFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, firstIrradiacnceFBO);
+
+  glGenTextures(1, &firstIrradianceTex);
+  glBindTexture(GL_TEXTURE_2D, firstIrradianceTex);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, MU_S_SIZE, R_SIZE, 0, GL_RGBA, GL_FLOAT, NULL);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, firstIrradianceTex, 0);
+
+
+  Shader firstIrradShader = Shader("../shaders/precompute/irRadVert.glsl",
+    "../shaders/precompute/irRadFrag.glsl");
+
+  firstIrradShader.use();
+  firstIrradShader.setVec3("u_sunLight", sunLight);
+  firstIrradShader.setFloat("R_SIZE", R_SIZE);
+  firstIrradShader.setFloat("u_sunIntensity", sunIntensity);
+  glBindTexture(GL_TEXTURE0, transmittanceTex);
+  firstIrradShader.setInt("u_transmittanceLUT", 0);
+
+  glViewport(0, 0, MU_S_SIZE, R_SIZE);
+  glBindVertexArray(texVAO);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+
 #pragma endregion
+
 
   unsigned int atmosphereFBO;
   glGenFramebuffers(1, &atmosphereFBO);
@@ -418,7 +490,7 @@ int main() {
     planetShader.setVec3("sunLight", sunLight);
     planetShader.setVec3("u_planetCenter", planet.position);
     planetShader.setFloat("u_bottomRadius", 9000.0f);
-    planetShader.setFloat("u_topRadius", atmosphereRadius);
+    planetShader.setFloat("u_topRadius", topRadius);
     planetShader.setFloat("u_sunIntensity", 20.0f);
     planetShader.setVec3("u_sunDir", glm::normalize(sun.position - planet.position));
     planetShader.setMat4("projection", projection);
@@ -488,7 +560,7 @@ int main() {
     atmosphereShader.setFloat("u_height", 1080);
     atmosphereShader.setVec3("u_planetCenter", planet.position);
     atmosphereShader.setFloat("u_bottomRadius", 9000.0f);
-    atmosphereShader.setFloat("u_topRadius", atmosphereRadius);
+    atmosphereShader.setFloat("u_topRadius", topRadius);
     atmosphereShader.setInt("u_transmittanceLUT", 0);
     atmosphereShader.setInt("u_depthBuffer", 1);
     atmosphereShader.setInt("u_colorBuffer", 2);

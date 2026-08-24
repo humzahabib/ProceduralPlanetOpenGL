@@ -187,7 +187,4 @@ void main() {
     vec3 viewTransmittance = exp(-(betaRayleight * viewDensityR + betaMie * viewDensityM));
     FragColor = vec4(texture(u_colorBuffer, uv).rgb * viewTransmittance + finalColor, 1.0);
 
-
-
-
 }

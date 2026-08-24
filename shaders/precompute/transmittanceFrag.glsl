@@ -2,6 +2,9 @@
 
 out vec4 FragColor;
 
+
+
+uniform int R_SIZE, MU_SIZE;
 uniform float bottomRadius = 9000.0;
 uniform float topRadius = 9600.0;
 
@@ -20,7 +23,7 @@ float ray_sphere_intersect(vec3 origin, vec3 dir, float radius)
 }
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / vec2(2048.0, 1024.0);
+    vec2 uv = gl_FragCoord.xy / vec2(float(MU_SIZE), float(R_SIZE));
     float mu = (uv.x * 2.0) - 1.0;
     float r = mix(bottomRadius, topRadius, uv.y);
 
