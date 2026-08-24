@@ -10,11 +10,12 @@
 - [x] Apply multiple layers of Perlin noise to create landscapes and fine procedural details on the planet.
 - [x] Apply shading to each vertex and calculate its colour procedurally to give planet colour.
 - [x] Apply basic pixel shading.
-- [ ] Implement atmospheric rendering.
-- [ ] Direct Light
-- [ ] Single Scattered Light
-- [ ] Multiple Scattered Light
-- [ ] Implement an LOD system (optional)
+- [x] Implement atmospheric rendering.
+- [x] Direct Light.
+- [x] Single Scattered Light.
+- [ ] Precompute single scattered light. 
+- [ ] Multiple Scattered Light.
+- [ ] Implement an LOD system (optional).
 
 ## Phase1: Generating a Regular Icosahedron (Convex)
 The reason we are not using a normal (UV) sphere mesh is that the vertices on a UV
@@ -82,6 +83,6 @@ origin based camera where the eye always stays at the origin and the world revol
 - Geodesic subdivision / icosphere: [Wikipedia - Geodesic polyhedron](https://en.wikipedia.org/wiki/Geodesic_polyhedron)
 - Slerp: [Wikipedia - Slerp](https://en.wikipedia.org/wiki/Slerp)
 - Perlin noise (original): Perlin, K. (1985). *An Image Synthesizer*. SIGGRAPH '85.
-- Perlin noise (improved, the version I'm using): Perlin, K. (2002). [*Improving Noise*](https://mrl.cs.nyu.edu/~perlin/paper445.pdf). ACM Transactions on Graphics 21(3), 681â€“682. Reference implementation: [mrl.cs.nyu.edu/~perlin/noise](https://mrl.cs.nyu.edu/~perlin/noise/)
+- Perlin noise (improved, the version I'm using): Perlin, K. (2002). [*Improving Noise*](https://mrl.cs.nyu.edu/~perlin/paper445.pdf). ACM Transactions on Graphics 21(3), 681–682. Reference implementation: [mrl.cs.nyu.edu/~perlin/noise](https://mrl.cs.nyu.edu/~perlin/noise/)
 - Fractal Brownian motion (octave stacking for terrain): [Wikipedia - Fractional Brownian motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion)
-- Atmospheric scattering (for the upcoming atmosphere phases): Bruneton, E. and Neyret, F. (2008). [*Precomputed Atmospheric Scattering*](https://hal.inria.fr/inria-00288758/en). Computer Graphics Forum 27(4), 1079â€“1086. Updated 2017 implementation and writeup: [ebruneton.github.io/precomputed_atmospheric_scattering](https://ebruneton.github.io/precomputed_atmospheric_scattering/), code: [github.com/ebruneton/precomputed_atmospheric_scattering](https://github.com/ebruneton/precomputed_atmospheric_scattering)
+- Atmospheric scattering (for the upcoming atmosphere phases): Bruneton, E. and Neyret, F. (2008). [*Precomputed Atmospheric Scattering*](https://hal.inria.fr/inria-00288758/en). Computer Graphics Forum 27(4), 1079–1086. Updated 2017 implementation and writeup: [ebruneton.github.io/precomputed_atmospheric_scattering](https://ebruneton.github.io/precomputed_atmospheric_scattering/), code: [github.com/ebruneton/precomputed_atmospheric_scattering](https://github.com/ebruneton/precomputed_atmospheric_scattering)

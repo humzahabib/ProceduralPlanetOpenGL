@@ -1,35 +1,46 @@
-cmake_minimum_required(VERSION 4.2)
+cmake_minimum_required(VERSION 3.15)
+project(ProceduralPlanetOpenGL)
 
 project(ProceduralPlanetOpenGL LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(glfw3 REQUIRED)
 
-add_executable(ProceduralPlanetOpenGL
-        src/main.cpp
-        src/icosahedronGenerator.cpp
-        src/shader.cpp
-        src/glad.c
-        include/camera.h
-        src/camera.cpp
-        include/helpers.h
-        include/Mesh.h
-        src/Mesh.cpp
-        include/SphereDeformer.h
-        src/SphereDeformer.cpp
-        include/TerrainShader.h
-        src/TerrainShader.cpp
-        include/starMeshGenerator.h
-        src/starMeshGenerator.cpp
-        include/atmPrecomputation.h
+# 1. Include your local GLAD and GLM folders
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# 2. Add your source files (including glad.c!)
+add_executable(ProceduralPlanetOpenGL 
+    src/main.cpp
+    src/camera.cpp
+    src/shader.cpp
+    src/starMeshGenerator.cpp
+    src/SphereDeformer.cpp
+    src/Mesh.cpp
+    src/icosahedronGenerator.cpp
+    src/TerrainShader.cpp
+    src/glad.c 
 )
 
-target_include_directories(ProceduralPlanetOpenGL PRIVATE
-        include
-)
+# 3. Find OpenGL on ANY operating system automatically
+find_package(OpenGL REQUIRED)
 
-target_link_libraries(ProceduralPlanetOpenGL PRIVATE
-        glfw
+# 4. Download and compile GLFW automatically
+include(FetchContent)
+FetchContent_Declare(
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG        3.4 
+)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(glfw)
+
+# 5. Link it all together
+target_link_libraries(ProceduralPlanetOpenGL 
+    PRIVATE 
+    glfw 
+    OpenGL::GL
 )
