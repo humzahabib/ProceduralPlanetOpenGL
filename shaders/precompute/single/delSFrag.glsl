@@ -9,8 +9,6 @@ out vec4 FragColor;
 // y_2 -> nu (v.s)
 
 
-
-
 uniform int rLayer;
 uniform vec3 u_sunLight;
 uniform float u_topRadius;
@@ -21,9 +19,6 @@ uniform int R_SIZE, MU_SIZE, MU_S_SIZE, NU_SIZE;
 
 uniform sampler2D u_transmittanceLUT;
 
-
-vec3 betaRayleigh = vec3(5.8e-3, 13.5e-3, 33.1e-3);
-float betaMie = 3.9e-3;
 
 
 vec2 raySphereIntersection(vec3 rayOrigin, vec3 rayDir, float radius, out bool check) {
@@ -49,13 +44,13 @@ vec4 extractDimensions(vec2 coords, int layer) {
     float height = (float(layer) + 0.5) / R_SIZE;
     float mu = (float(coords.x) + 0.5) / MU_SIZE;
 
-    int mu_s_idx = int(coords.y / MU_S_SIZE);
-    int nu_idx = int(int(coords.y) % MU_S_SIZE);
+    int mu_s_idx = int(coords.y / NU_SIZE);
+    int nu_idx = int(coords.y) % NU_SIZE;
 
     float mu_s = (float(mu_s_idx) + 0.5) / MU_S_SIZE;
     float nu = (float(nu_idx) + 0.5) / NU_SIZE;
 
-    return vec4(height, mu, mu_s, nu);
+    return vec4(mu, mu_s, nu, height);
 
 }
 
@@ -77,21 +72,19 @@ float miePhase(float mu) {
 
 void main() {
 
+    // IDXs for r, mu, mu_s, nu
+    vec4 texelDimensions = extractDimensions(gl_FragCoord.xy, rLayer);
+
+    float mu = (texelDimensions.x * 2.0) - 1.0;
+    float mu_s = (texelDimensions.y * 2.0) - 1.0;
+    float nu = (texelDimensions.z * 2.0) - 1.0;
+    float height = u_bottomRadius + texelDimensions.w * (u_topRadius - u_bottomRadius);
+
     float sy = mu_s;
     float sx = (nu - mu * sy) / sqrt(1.0 - mu * mu);
     float sz = sqrt(max(0.0, 1.0 - sx * sx - sy * sy));
 
     vec3 sunDir = vec3(sx, sy, sz);
-
-
-    // IDXs for r, mu, mu_s, nu
-    vec4 texelDimensions = extractDimensions(gl_FragCoord.xy, rLayer);
-
-    float height = (texelDimensions.x * u_topRadius) - u_bottomRadius;
-    float mu = (texelDimensions.y * 2.0) - 1.0;
-    float mu_s = (texelDimensions.z * 2.0) - 1.0;
-    float nu = (texelDimensions.w * 2.0) - 1.0;
-
 
     vec3 rayOri = vec3(0.0f, height, 0.0f);
     vec3 rayDir = vec3(sqrt(1 - mu * mu), mu, 0.0f);

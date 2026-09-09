@@ -18,6 +18,7 @@ uniform vec3 sunLight; // Color of the sun
 uniform vec3 viewPos;  // Camera position
 
 uniform sampler2D u_transmittanceLUT;
+uniform sampler2D u_irradianceLUT;
 
 vec2 getTransmittanceUV(float mu, float r)
 {
@@ -31,15 +32,12 @@ void main() {
     vec3 centerToFrag = pos - u_planetCenter;
     float height = length(centerToFrag);
     vec3 zenith = centerToFrag / height;
-    float mu = dot(zenith, u_sunDir);
+    float mu_s = dot(zenith, u_sunDir);
 
-    vec2 sunTransUV = getTransmittanceUV(mu, height);
-    vec3 sunTransmittane = texture(u_transmittanceLUT, sunTransUV).rgb;
+    vec2 uv = vec2((mu_s + 1.0) / 2.0, height / (u_topRadius));
 
-
-    vec3 sunEnergy = sunLight * u_sunIntensity;
+    vec3 irradianceP = texture(u_irradianceLUT, uv).rgb;
     vec3 brdf = surfaceColor / 3.1415;
-    float cosine = max(dot(normalize(normal), u_sunDir), 0.0);
 
 
 
@@ -55,6 +53,6 @@ void main() {
 
     vec3 backToCamTrans = fragToSpaceTrans / max(camTrans, 0.0001f);
 
-    FragColor = vec4(sunEnergy * sunTransmittane * brdf * cosine * backToCamTrans, 1.0f);
+    FragColor = vec4(brdf * irradianceP * backToCamTrans, 1.0f);
 
 }
