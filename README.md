@@ -1,12 +1,19 @@
-
 # ProceduralPlanetOpenGL
 ## Preview
 <img width="1920" height="1080" alt="previewGIF" src="https://github.com/user-attachments/assets/ec7bdd95-2561-4248-bdb3-f166dbe5a4c1" />
-<img width="960" height="540" alt="screenshot_2026-08-25_22:21:26" src="https://github.com/user-attachments/assets/8d906d92-8c9c-4cbb-9108-af14215e6082" />
-<img width="960" height="540" alt="screenshot_2026-08-25_23:46:26" src="https://github.com/user-attachments/assets/915e47f6-d5c8-4378-98c8-cc00773010ee" />
-<img width="960" height="540" alt="screenshot_2026-08-06_17:38:06" src="https://github.com/user-attachments/assets/357381e9-87f4-4037-9601-1e43144cdb1a" />
-<img width="960" height="540" alt="screenshot_2026-08-06_02:25:07" src="https://github.com/user-attachments/assets/8bb39906-bb7a-4616-9fbf-410fcf47da9c" />
 
+<div align="center">
+  <table>
+    <tr>
+      <td><img width="480" height="270" alt="screenshot_2026-08-25_22:21:26" src="https://github.com/user-attachments/assets/8d906d92-8c9c-4cbb-9108-af14215e6082" /></td>
+      <td><img width="480" height="270" alt="screenshot_2026-08-25_23:46:26" src="https://github.com/user-attachments/assets/915e47f6-d5c8-4378-98c8-cc00773010ee" /></td>
+    </tr>
+    <tr>
+      <td><img width="480" height="270" alt="screenshot_2026-08-06_17:38:06" src="https://github.com/user-attachments/assets/357381e9-87f4-4037-9601-1e43144cdb1a" /></td>
+      <td><img width="480" height="270" alt="screenshot_2026-08-06_02:25:07" src="https://github.com/user-attachments/assets/8bb39906-bb7a-4616-9fbf-410fcf47da9c" /></td>
+    </tr>
+  </table>
+</div>
 
 ## This project has the following phases.
 - [x] Generate a Regular Icosahedron (Convex)
@@ -72,22 +79,19 @@ while factoring in height, slope and location on the sphere but had to cut on it
 
 25th August, 2026. Mid progress checkpoint.
 
-
-
-
 ## Additional Stuff
 ### Star Mesh
-To give the whole a nice space background, I create stars on a black background by randomly putting vertices on ```nStars``` locations on a large sphere and then giving them size and colour based on probability. These vertices are then rendered as points with the given size and colour and give the whole scene a nice starry background.
+To give the whole a nice space background, I create stars on a black background by randomly putting vertices on ```nStars``` locations on a large sphere and then giving them size and colour based [...]
 
 ### Origin Based Camera
 To deal with floating point inaccuracies and the artifects introduced by them, the renderer uses an
-origin based camera where the eye always stays at the origin and the world revolves around it. That way, floating point inaccuracies never grow large near the camera and no artifacts appear in the camera.
+origin based camera where the eye always stays at the origin and the world revolves around it. That way, floating point inaccuracies never grow large near the camera and no artifacts appear in the[...]
 
 ## References
 - Icosahedron: [Wikipedia - Icosahedron](https://en.wikipedia.org/wiki/Icosahedron)
 - Geodesic subdivision / icosphere: [Wikipedia - Geodesic polyhedron](https://en.wikipedia.org/wiki/Geodesic_polyhedron)
 - Slerp: [Wikipedia - Slerp](https://en.wikipedia.org/wiki/Slerp)
 - Perlin noise (original): Perlin, K. (1985). *An Image Synthesizer*. SIGGRAPH '85.
-- Perlin noise (improved, the version I'm using): Perlin, K. (2002). [*Improving Noise*](https://mrl.cs.nyu.edu/~perlin/paper445.pdf). ACM Transactions on Graphics 21(3), 681–682. Reference implementation: [mrl.cs.nyu.edu/~perlin/noise](https://mrl.cs.nyu.edu/~perlin/noise/)
+- Perlin noise (improved, the version I'm using): Perlin, K. (2002). [*Improving Noise*](https://mrl.cs.nyu.edu/~perlin/paper445.pdf). ACM Transactions on Graphics 21(3), 681–682. Reference impl[...]
 - Fractal Brownian motion (octave stacking for terrain): [Wikipedia - Fractional Brownian motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion)
-- Atmospheric scattering (for the upcoming atmosphere phases): Bruneton, E. and Neyret, F. (2008). [*Precomputed Atmospheric Scattering*](https://hal.inria.fr/inria-00288758/en). Computer Graphics Forum 27(4), 1079–1086. Updated 2017 implementation and writeup: [ebruneton.github.io/precomputed_atmospheric_scattering](https://ebruneton.github.io/precomputed_atmospheric_scattering/), code: [github.com/ebruneton/precomputed_atmospheric_scattering](https://github.com/ebruneton/precomputed_atmospheric_scattering)
+- Atmospheric scattering (for the upcoming atmosphere phases): Bruneton, E. and Neyret, F. (2008). [*Precomputed Atmospheric Scattering*](https://hal.inria.fr/inria-00288758/en). Computer Graphics[...]
