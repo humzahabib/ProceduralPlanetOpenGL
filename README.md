@@ -2,6 +2,10 @@
 # ProceduralPlanetOpenGL
 ## Preview
 <img width="1920" height="1080" alt="previewGIF" src="https://github.com/user-attachments/assets/ec7bdd95-2561-4248-bdb3-f166dbe5a4c1" />
+<img width="960" height="540" alt="screenshot_2026-08-25_22:21:26" src="https://github.com/user-attachments/assets/8d906d92-8c9c-4cbb-9108-af14215e6082" />
+<img width="960" height="540" alt="screenshot_2026-08-25_23:46:26" src="https://github.com/user-attachments/assets/915e47f6-d5c8-4378-98c8-cc00773010ee" />
+<img width="960" height="540" alt="screenshot_2026-08-06_17:38:06" src="https://github.com/user-attachments/assets/357381e9-87f4-4037-9601-1e43144cdb1a" />
+<img width="960" height="540" alt="screenshot_2026-08-06_02:25:07" src="https://github.com/user-attachments/assets/8bb39906-bb7a-4616-9fbf-410fcf47da9c" />
 
 
 ## This project has the following phases.
@@ -13,8 +17,9 @@
 - [x] Implement atmospheric rendering.
 - [x] Direct Light.
 - [x] Single Scattered Light.
-- [ ] Precompute single scattered light. 
-- [ ] Multiple Scattered Light.
+- [x] Precompute single scattered light. 
+- [x] Multiple Scattered Light.
+- [x] Use optimized Parameterisation
 - [ ] Implement an LOD system (optional).
 
 ## Phase1: Generating a Regular Icosahedron (Convex)
@@ -83,6 +88,6 @@ origin based camera where the eye always stays at the origin and the world revol
 - Geodesic subdivision / icosphere: [Wikipedia - Geodesic polyhedron](https://en.wikipedia.org/wiki/Geodesic_polyhedron)
 - Slerp: [Wikipedia - Slerp](https://en.wikipedia.org/wiki/Slerp)
 - Perlin noise (original): Perlin, K. (1985). *An Image Synthesizer*. SIGGRAPH '85.
-- Perlin noise (improved, the version I'm using): Perlin, K. (2002). [*Improving Noise*](https://mrl.cs.nyu.edu/~perlin/paper445.pdf). ACM Transactions on Graphics 21(3), 681–682. Reference implementation: [mrl.cs.nyu.edu/~perlin/noise](https://mrl.cs.nyu.edu/~perlin/noise/)
+- Perlin noise (improved, the version I'm using): Perlin, K. (2002). [*Improving Noise*](https://mrl.cs.nyu.edu/~perlin/paper445.pdf). ACM Transactions on Graphics 21(3), 681â€“682. Reference implementation: [mrl.cs.nyu.edu/~perlin/noise](https://mrl.cs.nyu.edu/~perlin/noise/)
 - Fractal Brownian motion (octave stacking for terrain): [Wikipedia - Fractional Brownian motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion)
-- Atmospheric scattering (for the upcoming atmosphere phases): Bruneton, E. and Neyret, F. (2008). [*Precomputed Atmospheric Scattering*](https://hal.inria.fr/inria-00288758/en). Computer Graphics Forum 27(4), 1079–1086. Updated 2017 implementation and writeup: [ebruneton.github.io/precomputed_atmospheric_scattering](https://ebruneton.github.io/precomputed_atmospheric_scattering/), code: [github.com/ebruneton/precomputed_atmospheric_scattering](https://github.com/ebruneton/precomputed_atmospheric_scattering)
+- Atmospheric scattering (for the upcoming atmosphere phases): Bruneton, E. and Neyret, F. (2008). [*Precomputed Atmospheric Scattering*](https://hal.inria.fr/inria-00288758/en). Computer Graphics Forum 27(4), 1079â€“1086. Updated 2017 implementation and writeup: [ebruneton.github.io/precomputed_atmospheric_scattering](https://ebruneton.github.io/precomputed_atmospheric_scattering/), code: [github.com/ebruneton/precomputed_atmospheric_scattering](https://github.com/ebruneton/precomputed_atmospheric_scattering)
