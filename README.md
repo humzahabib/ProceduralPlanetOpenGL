@@ -74,10 +74,14 @@ height = sum over octaves of: amplitude_i * perlin3D(position * frequency_i)
 final_position = normalize(position) * (planet_radius + height * height_scale)
 ```
 
-Next up is calculating per-vertex colour procedurally based on height.I originally planned to do it
-while factoring in height, slope and location on the sphere but had to cut on it.
+## Phase 4: Atmospheric Scattering
 
-25th August, 2026. Mid progress checkpoint.
+The atmospheric scattering in this project is implemented using Bruneton's 2008 paper on Precomputed Atmospheric Scattering. The whole precomputation pipeline executes on GPU in multiple render passes, and the rendering of atmosphere is done as a post processing effect on the final image. The project implements both single and multiple scattering of light.
+
+## Phase 5: Optimizations + Parameterisation
+
+The final phase of the project is to implement the non linear parameterisation of zenith angle and height to get rid of visual artifacts, and implementing an LOD system. This phase will be completed after Fall 2026-2027.
+
 
 ## Additional Stuff
 ### Star Mesh
